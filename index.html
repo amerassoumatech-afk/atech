@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shop POS</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7480;--bd:#e3e6ea;--ac:#1d6fe8;--on:#fff;--ok:#12805c;--bad:#c2362b;--warn:#a15c00;color-scheme:light;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171b;--card:#1d2127;--tx:#eceff3;--mu:#98a1ad;--bd:#2d333b;--ac:#5b9bff;--on:#0b1220;--ok:#43c59e;--bad:#ff7b72;--warn:#e3b341;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14171b;--card:#1d2127;--tx:#eceff3;--mu:#98a1ad;--bd:#2d333b;--ac:#5b9bff;--on:#0b1220;--ok:#43c59e;--bad:#ff7b72;--warn:#e3b341;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:calc(15px*var(--fs,1));line-height:1.4;padding:12px;max-width:1280px;margin:0 auto}
+h1{font-size:calc(18px*var(--fs,1));margin:0}h3{margin:0 0 8px;font-size:calc(15px*var(--fs,1))}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.hr{display:flex;gap:6px;align-items:center}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--ac)}
+button.pri,button.on{background:var(--ac);color:var(--on);border-color:var(--ac)}
+button.bad{color:var(--bad)}button.sm{padding:3px 9px;font-size:calc(13px*var(--fs,1))}
+input,select,textarea{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac);outline-offset:-1px}
+input[type=checkbox]{width:auto}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}
+.mb{margin-bottom:12px}
+.sell{display:grid;grid-template-columns:1fr 360px;gap:12px;align-items:start}
+@media(max-width:900px){.sell{grid-template-columns:1fr}}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chips button{padding:4px 10px;border-radius:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(150px*var(--box,1)),1fr));gap:8px}
+.p{text-align:left;display:flex;flex-direction:column;gap:2px;padding:10px}
+.mu,.p small{color:var(--mu)}
+.p.out{opacity:.45}
+.line{border-bottom:1px solid var(--bd);padding:6px 0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:6px 0}
+.row button{padding:2px 9px}
+.sc{display:flex;gap:6px;margin-bottom:8px}.sc button{white-space:nowrap}
+label{display:block;margin:8px 0 2px;color:var(--mu);font-size:calc(13px*var(--fs,1))}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.kpis b{display:block;font-size:calc(20px*var(--fs,1))}.kpis .card{cursor:default}.kpis .card[data-a]{cursor:pointer}
+.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px}
+td,th{padding:6px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top}
+th{color:var(--mu);font-weight:600;font-size:calc(13px*var(--fs,1))}
+tr.hl td{background:color-mix(in srgb,var(--bad) 8%,transparent)}
+.low{color:var(--bad);font-weight:600}.okc{color:var(--ok);font-weight:600}
+.tag{display:inline-block;padding:1px 8px;border-radius:20px;font-size:calc(12px*var(--fs,1));border:1px solid var(--bd);color:var(--mu)}
+.tag.ok{color:var(--ok);border-color:var(--ok)}.tag.bad{color:var(--bad);border-color:var(--bad)}.tag.warn{color:var(--warn);border-color:var(--warn)}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;align-items:end}
+.fcol label:first-child{margin-top:0}
+.pre{white-space:pre-line}.right{text-align:right}.grow{flex:1}.big{font-size:calc(22px*var(--fs,1))}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:900px){.two{grid-template-columns:1fr}}
+.dx{display:grid;gap:14px}.dx-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px}
+.dx-title{font-size:calc(24px*var(--fs,1));font-weight:600;margin:0}.dx-lede{margin:6px 0 0;color:var(--mu);max-width:64ch;min-height:1.4em}.dx-lede b{color:inherit;font-weight:600}
+.dx-seg{display:inline-flex;gap:2px;padding:2px;border:1px solid var(--bd);border-radius:8px;background:var(--card)}.dx-seg button{border:0;background:transparent;padding:5px 12px;border-radius:6px;color:var(--mu);cursor:pointer;box-shadow:none}.dx-seg button.on{background:var(--ac);color:#fff}
+.dx-range{font-size:calc(12px*var(--fs,1));color:var(--mu);text-align:right;margin-top:4px}
+.dx-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.dx-tile .v{font-size:calc(24px*var(--fs,1));font-weight:600;margin:4px 0;font-variant-numeric:tabular-nums}.dx-delta{font-size:calc(12px*var(--fs,1));color:var(--mu)}
+.dx-good{color:var(--ok)}.dx-bad{color:var(--bad)}.dx-defs{font-size:calc(12px*var(--fs,1));color:var(--mu);margin:-4px 0 0}
+.dx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}.dx-card{min-width:0}.dx-card h2{font-size:calc(16px*var(--fs,1));margin:0 0 2px}.dx-note{font-size:calc(12px*var(--fs,1));color:var(--mu);margin:2px 0 10px}
+.dx-legend{display:flex;gap:14px;font-size:calc(12px*var(--fs,1));color:var(--mu);flex-wrap:wrap}.dx-sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+.dx-chart{position:relative;min-height:240px}.dx-tip{position:absolute;z-index:2;pointer-events:none;background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:6px 10px;font-size:calc(12px*var(--fs,1));white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.dx-mix{display:grid;gap:12px}.dx-mrow{display:grid;grid-template-columns:minmax(90px,130px) 1fr;gap:8px;align-items:center}.dx-mrow .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dx-mline{display:flex;align-items:center;gap:6px;margin:2px 0}.dx-bar{height:10px;min-width:2px;border-radius:4px}.dx-mv{font-size:calc(12px*var(--fs,1));color:var(--mu)}
+.dx-pay{display:flex;gap:2px;height:14px;border-radius:4px;overflow:hidden}.dx-pkeys{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px}.dx-pkeys .pv{font-size:calc(18px*var(--fs,1));font-weight:600}
+.dx-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}.dx-table th{text-align:left;font-size:calc(12px*var(--fs,1));font-weight:500;color:var(--mu);padding:6px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}.dx-table td{padding:6px 8px;border-bottom:1px solid var(--bd)}.dx-table .num{text-align:right;white-space:nowrap}
+.dx-table th button{border:0;background:none;padding:0;color:inherit;font:inherit;cursor:pointer;box-shadow:none}.dx-table th[aria-sort=descending] button:after{content:" ↓"}.dx-table th[aria-sort=ascending] button:after{content:" ↑"}
+.dx-scroll{max-height:26rem;overflow:auto}.dx-rc{display:flex;align-items:center;justify-content:flex-end;gap:8px}.dx-rt{flex:1;max-width:80px;height:6px}
+.qas{display:grid;grid-template-columns:repeat(auto-fit,minmax(calc(180px*var(--box,1)),1fr));gap:10px;margin:12px 0}.qa{cursor:pointer;display:flex;flex-direction:column;gap:2px}.qa b{font-size:calc(16px*var(--fs,1))}
+html[dir=rtl] td,html[dir=rtl] th{text-align:right}html[dir=rtl] .right{text-align:left}html[dir=rtl] .row,html[dir=rtl] .form{direction:rtl}
+#msg{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 14px;border-radius:20px;display:none;z-index:50;max-width:90%;text-align:center}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px;z-index:60}
+#modal .card{max-width:360px;width:100%;max-height:92%;overflow:auto}#modal .card.wide{max-width:760px}
+#lock{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:40}
+#lock .card{width:300px;text-align:center}
+@media print{body{zoom:1!important}html{--fs:1!important;--pic:1!important;--box:1!important}}
+.th{width:calc(44px*var(--pic,1));height:calc(44px*var(--pic,1));object-fit:var(--pfit,contain);border-radius:8px;flex:none;background:rgba(127,127,127,.08)}.pimg{display:block;width:100%;height:calc(100px*var(--pic,1));object-fit:var(--pfit,contain);object-position:center;border-radius:8px;margin-bottom:6px;background:rgba(127,127,127,.08)}.banner{display:block;width:auto;max-width:100%;height:auto;max-height:calc(200px*var(--pic,1));margin:0 auto 10px;border-radius:12px}.zm{display:inline-flex;gap:2px}.sqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(calc(130px*var(--box,1)),1fr));gap:10px;margin-bottom:12px}.sqb{cursor:pointer;text-align:center;padding:10px}.sqb.on{border:2px solid var(--ac);padding:9px}.sqimg{display:block;width:100%;height:calc(70px*var(--pic,1));object-fit:var(--pfit,contain);border-radius:8px;margin-bottom:6px}
+@media print{body>*:not(#modal){display:none!important}#modal{position:static;background:none;display:block!important;padding:0}#modal .card{max-width:100%;border:0;max-height:none}#modal button{display:none}}
+</style></head>
+<body>
+<header><div class="hr"><img id="logo" alt="" style="display:none;height:34px;border-radius:6px"><h1 id="title">Shop POS</h1></div>
+<div class="hr"><span id="sync" class="mu"></span><button id="lockb" class="sm" style="display:none" data-a="lock">Lock</button><span class="zm"><button class="sm" data-a="zout" title="Zoom out">−</button><button class="sm" id="zpct" data-a="zreset" title="Reset zoom">100%</button><button class="sm" data-a="zin" title="Zoom in">+</button></span><button class="sm" data-a="dspopen" title="Text, picture and box size">Size</button><button class="sm" data-a="calcopen">Calculator</button><button class="sm" data-a="theme">Light / Dark</button></div></header>
+<nav id="nav"></nav>
+<div id="tabpic"></div>
+<main id="main"></main>
+<div id="msg"></div>
+<div id="modal"><div class="card" id="rcpt"></div></div>
+<div id="lock"><div class="card" style="width:min(380px,92vw)"><div id="lkhead" style="text-align:center;margin-bottom:12px"></div><label>Username</label><input id="luser" autocomplete="username" autocapitalize="off" spellcheck="false">
+<label>Password</label><div style="position:relative"><input id="pin" type="password" autocomplete="current-password"><button class="sm" data-a="eye" type="button" style="position:absolute;right:4px;top:4px;border:0;background:none" aria-label="Show or hide the password">Show</button></div>
+<div class="row" style="margin-top:6px"><span id="pinerr" class="low"></span><button class="pri" data-a="unlock">Sign in</button></div><div style="margin-top:10px"><a href="#" data-a="forgot" class="mu" style="font-size:13px">Forgot the owner password?</a></div></div></div>
+<script>
+const TOKEN="__TOKEN__";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let SET={},INFO={},tab="home",ME={user:"",role:"owner",has_users:false},LANG="en",PROV="alfa",TMODE="sell",AMODE="svc";
+const PROV_APIS=new Set(["alfa_state","alfa_services","alfa_service_save","alfa_cards","alfa_card_save","alfa_adjust","alfa_set","alfa_adjustments","alfa_log","validity_cards","validity_sale","alfa_sell","validity_presets","preset_save"]);
+const cur=()=>SET.currency||"$";
+const fix=n=>Math.round((+n||0)*100)/100;
+const money=n=>{n=fix(n);return(n<0?"-":"")+cur()+Math.abs(n).toFixed(2)};
+const rate=()=>+SET.lbp_rate||0;
+const lbp=n=>Math.round((+n||0)*rate()).toLocaleString("en-US")+" L.L";
+const both=n=>money(n)+(rate()?` <small class="mu">(${lbp(n)})</small>`:"");
+const toUSD=v=>SL.cur==="LBP"?(+v||0)/(rate()||1):(+v||0);
+const applyAccent=()=>{const r=document.documentElement.style;r.setProperty("--pfit",SET.pic_fit==="cover"?"cover":"contain");if(SET.accent)r.setProperty("--ac",SET.accent);else r.removeProperty("--ac")};
+const lpaid=s=>{const t=(s.payments||[]).reduce((a,p)=>a+(p.cur==="LBP"?+p.amount_lbp||0:0),0);return t>0?`<div class="row mu"><span>Paid in L.L</span><span>${Math.round(t).toLocaleString("en-US")} L.L</span></div>`:""};
+const fd=s=>s?String(s).slice(0,10):"",ft=s=>s?String(s).slice(0,16):"";
+const addDays=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+const mstart=()=>new Date().toISOString().slice(0,8)+"01";
+const todayS=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const METHODS=["Cash","Card","Transfer"];
+async function api(name,args={}){
+  if(PROV_APIS.has(name)&&args.provider===undefined)args={...args,provider:PROV};
+  if(name==="open_url"&&!/^(127\.0\.0\.1|localhost)$/.test(location.hostname)){window.open(args.url,"_blank");return true}
+  const r=await fetch("/api/"+name,{method:"POST",headers:{"Content-Type":"application/json","X-Token":TOKEN,"X-Session":sessionStorage.getItem("sess")||""},body:JSON.stringify(args)});
+  const j=await r.json();if(!j.ok){if(j.error==="LOCKED")showLock();throw new Error(j.error)}return j.data}
+async function act(name,args={},ok){try{const d=await api(name,args);if(ok)toast(ok);return{d}}catch(e){
+  if(e.message==="OWNER_PIN"){const f=await askForm("Owner password required",[{k:"p",l:"Owner password",t:"password"}],{},"Confirm");if(f&&f.p)return act(name,{...args,_opin:f.p},ok);return null}
+  if(e.message==="LOCKED")return null;
+  toast(e.message);return null}}
+function toast(t,ms=2800){const m=$("#msg");m.textContent=t;m.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>m.style.display="none",ms)}
+function sure(b,fn){if(b.dataset.s){fn();return}b.dataset.s=1;const o=b.textContent;b.textContent="Tap again";setTimeout(()=>{delete b.dataset.s;b.textContent=o},3000)}
+const tag=t=>`<span class="tag ${({Paid:"ok",Active:"ok",Ready:"ok",Delivered:"ok",Overdue:"bad",Expired:"bad",Upcoming:"warn",Open:"warn","In repair":"warn"})[t]||""}">${esc(t)}</span>`;
+const T=(heads,rows,empty="Nothing here yet.")=>`<div class="card wrap"><table><tr>${heads.map(h=>`<th>${h}</th>`).join("")}</tr>${rows.join("")||`<tr><td colspan="${heads.length}" class="mu">${empty}</td></tr>`}</table></div>`;
+const opts=(list,sel)=>list.map(o=>{const v=Array.isArray(o)?o[0]:o,l=Array.isArray(o)?o[1]:o;return`<option value="${esc(v)}"${String(v)===String(sel)?" selected":""}>${esc(l)}</option>`}).join("");
+const ACT={},INP={},CHG={};
+let modalClose=null;
+function openModal(html,wide){$("#rcpt").className="card"+(wide?" wide":"");$("#rcpt").innerHTML=html;$("#modal").style.display="flex"}
+function closeModal(){$("#modal").style.display="none";$("#rcpt").innerHTML="";const f=modalClose;modalClose=null;if(f)f()}
+$("#modal").addEventListener("mousedown",e=>{if(e.target.id==="modal")closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#modal").style.display==="flex")closeModal();
+  if(e.key==="F2"){tab==="sell"?$("#bc")&&$("#bc").focus():go("sell");e.preventDefault()}
+  if(e.key==="F9"&&tab==="sell"){complete();e.preventDefault()}});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(b&&ACT[b.dataset.a])ACT[b.dataset.a](b,e)});
+document.addEventListener("input",e=>{const f=e.target.dataset.i;if(f&&INP[f])INP[f](e.target)});
+document.addEventListener("change",e=>{const f=e.target.dataset.c;if(f&&CHG[f])CHG[f](e.target)});
+function askForm(title,fields,vals={},okText="Save"){
+  return new Promise(res=>{
+    const fh=fields.map(f=>{const v=vals[f.k]==null?"":vals[f.k];let c;
+      if(f.t==="select")c=`<select name="${f.k}">${opts(f.o,v)}</select>`;
+      else if(f.t==="textarea")c=`<textarea name="${f.k}" rows="4" placeholder="${esc(f.ph||"")}">${esc(v)}</textarea>`;
+      else c=`<input name="${f.k}" type="${f.t||"text"}" ${f.t==="number"?'step="any"':""} value="${esc(v)}" placeholder="${esc(f.ph||"")}">`;
+      return`<label>${esc(f.l)}</label>${c}`}).join("");
+    let done=false;const fin=v=>{if(done)return;done=true;modalClose=null;res(v)};
+    openModal(`<h3>${esc(title)}</h3><form id="af" class="fcol">${fh}<div class="row" style="margin-top:12px"><button type="button" id="afx">Cancel</button><button class="pri">${esc(okText)}</button></div></form>`,fields.some(f=>f.wide));
+    modalClose=()=>fin(null);
+    $("#af").onsubmit=e=>{e.preventDefault();const d={};new FormData(e.target).forEach((v,k)=>d[k]=v);fin(d);closeModal()};
+    $("#afx").onclick=()=>closeModal();
+    const first=$("#af input,#af select,#af textarea");if(first)first.focus()})}
+function pickList(title,items){ // items: [[value,label]]
+  return new Promise(res=>{let done=false;modalClose=()=>{if(!done){done=true;res(null)}};
+    openModal(`<h3>${esc(title)}</h3>${items.map((it,i)=>`<div class="row"><span>${esc(it[1])}</span><button class="pri sm" data-a="pick" data-i="${i}">Select</button></div>`).join("")||'<p class="mu">Nothing to choose.</p>'}<div class="row"><span></span><button data-a="mclose">Cancel</button></div>`);
+    ACT.pick=b=>{done=true;modalClose=null;res(items[+b.dataset.i][0]);closeModal()}})}
+ACT.mclose=()=>closeModal();
+
+/* ================= receipt ================= */
+function receiptHTML(s){
+  const L=s.items.map(l=>`<div class="row"><span>${l.qty} × ${esc(l.name)}${l.imei?`<br><small class="mu">IMEI: ${esc(l.imei)}</small>`:""}${l.warranty_until?`<br><small class="mu">Warranty until ${fd(l.warranty_until)}</small>`:""}</span><span>${money(l.price*l.qty)}</span></div>`).join("");
+  const inst=s.installments.length?`<hr><b>Installments</b>${s.installments.map(i=>`<div class="row"><span>#${i.no} · ${fd(i.due_date)}</span><span>${money(i.amount)}${i.paid>=i.amount-.005?" ✓":""}</span></div>`).join("")}`:"";
+  return`${SET.logo?`<div style="text-align:center"><img src="${SET.logo}" alt="" style="max-height:70px;max-width:100%"></div>`:""}<h3 style="text-align:center">${esc(SET.shop_name)}</h3><div class="mu" style="text-align:center">${esc(SET.shop_phone)} ${esc(SET.shop_address)}<br>Receipt #${s.id} · ${ft(s.date)}${s.cname?"<br>"+esc(s.cname):""}</div><hr>${L}<hr>
+  ${s.discount?`<div class="row"><span>Discount</span><span>−${money(s.discount)}</span></div>`:""}${s.points_value?`<div class="row"><span>Points used (${s.points_used})</span><span>−${money(s.points_value)}</span></div>`:""}
+  <div class="row"><b>Total</b><b>${both(s.total)}</b></div><div class="row mu"><span>Paid</span><span>${both(s.paid)}</span></div>${lpaid(s)}
+  ${s.balance>.004?`<div class="row"><b>Balance due</b><b>${both(s.balance)}</b></div>`:""}${inst}
+  ${s.points_earned?`<div class="row mu"><span>Points earned</span><span>+${s.points_earned}</span></div>`:""}
+  <hr><div class="mu" style="text-align:center">${esc(SET.receipt_footer)}</div>
+  <div class="row"><button data-a="print">Print</button><button data-a="rwa">WhatsApp</button><button class="pri" data-a="mclose">Close</button></div>`}
+let LASTR=null;const showReceipt=s=>{LASTR=s;openModal(receiptHTML(s))};
+function waOpen(phone,text){let n=String(phone||"").replace(/\D/g,"");if(n){if(n.startsWith("00"))n=n.slice(2);else if(n.startsWith("0"))n=(SET.country_code||"961")+n.slice(1);else if(n.length<=8)n=(SET.country_code||"961")+n}
+  api("open_url",{url:`https://wa.me/${n}?text=${encodeURIComponent(text)}`})}
+function receiptText(s){return`${SET.shop_name}\nReceipt #${s.id} · ${ft(s.date)}\n`+s.items.map(l=>`${l.qty} x ${l.name} = ${money(l.price*l.qty)}`).join("\n")+`\nTotal: ${money(s.total)}${rate()?" ("+lbp(s.total)+")":""}\nPaid: ${money(s.paid)}`+(s.balance>.004?`\nBalance due: ${money(s.balance)}`:"")+`\n${SET.receipt_footer||""}`}
+ACT.rwa=()=>{if(LASTR)waOpen(LASTR.cphone,receiptText(LASTR))};
+ACT.printl=()=>{const st=$("#pagecss"),old=st?st.textContent:"";if(st)st.textContent="";window.onafterprint=()=>{if(st)st.textContent=old};window.print()};
+function applyPrintStyle(){let st=$("#pagecss");if(!st){st=document.createElement("style");st.id="pagecss";document.head.appendChild(st)}
+  st.textContent=(SET.receipt_width||"80mm")==="A4"?"":"@page{size:80mm auto;margin:2mm}@media print{#modal .card{max-width:76mm!important;font-size:calc(12px*var(--fs,1))}}"}
+ACT.print=()=>window.print();
+ACT.rcpt=async b=>{const r=await act("sale_get",{id:b.dataset.id});if(r)showReceipt(r.d)};
+
+/* ================= home ================= */
+async function viewHome(){
+  const d=await api("dashboard"),own=ME.role==="owner",qa=(t,l,s)=>`<div class="card qa" data-a="goto" data-t="${t}">${(INFO.pics||{})[t]?`<img class="pimg" alt="" src="${imgUrl(INFO.pics[t])}">`:""}<b>${l}</b><span class="mu">${s}</span></div>`;
+  const lb=d.last_offsite?new Date(String(d.last_offsite).replace(" ","T")):null,stale=own&&(!lb||(Date.now()-lb)>2*864e5);
+  $("#main").innerHTML=`<div class="card mb"><h2 style="margin:0 0 4px">${esc(SET.shop_name||"Shop POS")}</h2><span class="mu">${new Date().toLocaleDateString("en",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}${ME.user?" · "+esc(ME.user):""}</span></div>
+  ${stale?`<div class="card mb" data-a="goto" data-t="set" style="border-color:var(--bad);cursor:pointer"><b class="low">No backup outside this computer for 2 days</b><br><span class="mu">Open Settings and set Google Drive or an email backup.</span></div>`:""}
+  <div class="qas">${qa("sell","Sell","Cart, scanner and payments")}${qa("alfa","Alfa","Services, dollars and cards")}${qa("touch","Touch","Services, dollars and cards")}${qa("trd","Trade-in","Buy a used phone")}${qa("wty","Warranty","Claims and repairs under warranty")}${qa("day","Day summary","Cash, debts and the day's sales")}${qa("cus","Customers","Debts and statements")}${qa("cnt","Stock count","Scan the shelf")}${own?qa("dash","Dashboard","Sales, profit and trends"):""}</div>
+  <div class="two"><div><h3>Low stock</h3>${T(["Product","Category","Left","Alert at"],d.low.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.category)}</td><td class="low">${p.qty}</td><td>${p.min_qty}</td></tr>`),"Everything is stocked.")}</div>
+  <div><h3>Installments due in 7 days</h3>${T(["Customer","Invoice","Due","Remaining",""],d.due.map(r=>`<tr class="${r.due_date<todayS()?"hl":""}"><td>${esc(r.customer)}</td><td>#${r.sale_id}</td><td>${r.due_date}</td><td>${money(r.remaining)}</td><td><button class="sm" data-a="wa" data-n="${esc(r.customer)}" data-p="${esc(r.phone)}" data-m="${r.remaining}">Remind</button></td></tr>`),"Nothing due soon.")}</div></div>`}
+ACT.goto=b=>go(b.dataset.t);
+function waLink(name,phone,amt){
+  let n=String(phone||"").replace(/\D/g,"");if(!n)return toast("This customer has no phone number");
+  if(n.startsWith("00"))n=n.slice(2);else if(n.startsWith("0"))n=(SET.country_code||"961")+n.slice(1);else if(n.length<=8)n=(SET.country_code||"961")+n;
+  api("open_url",{url:`https://wa.me/${n}?text=${encodeURIComponent(`Hello ${name}, this is a friendly reminder that you have an outstanding balance of ${money(amt)} at ${SET.shop_name}. Thank you!`)}`})}
+ACT.wa=b=>waLink(b.dataset.n,b.dataset.p,b.dataset.m);
+
+/* ================= sell ================= */
+let SL={q:"",cat:"All",cur:"USD",cart:[],disc:"",pts:"",cid:"",kind:"cash",method:"Cash",cash:"",paid:"0",ninst:"3",due:"",notes:"",lid:1,prods:[],custs:[]};
+const inCart=pid=>SL.cart.filter(l=>l.pid===pid).reduce((a,l)=>a+l.qty,0);
+const sub=()=>SL.cart.reduce((a,l)=>a+l.price*l.qty,0);
+const cust=()=>SL.custs.find(c=>String(c.id)===String(SL.cid));
+const ptsUsed=()=>Math.max(0,Math.min(Math.floor(+SL.pts||0),cust()?cust().points:0));
+const total=()=>Math.max(0,fix(sub()-(+SL.disc||0)-ptsUsed()*(+SET.point_value||0)));
+async function viewSell(){
+  [SL.prods,SL.custs,SL.tops]=await Promise.all([api("products",{}),api("customers_min"),api("topup_items")]);
+  $("#main").innerHTML=`<div class="sell"><section><div class="sc"><input id="bc" placeholder="Scan barcode or IMEI here (or type + Enter)" data-i="sbc"></div>
+  <div style="display:flex;gap:8px"><input id="q" placeholder="Search products" value="${esc(SL.q)}" data-i="sq" style="flex:1">${ME.role==="owner"?'<button class="pri" data-a="tpnew">+ Top-up / Card</button>':""}</div><div id="tpq" class="chips"></div><div id="cats" class="chips"></div><div id="grid" class="grid"></div></section>
+  <aside class="card"><h3>Cart</h3><div id="lines"></div><div id="aside"></div></aside></div>`;
+  drawCats();drawGrid();drawCart();drawAside();$("#bc").focus()}
+function drawCats(){const cs=["All",...new Set(SL.prods.map(p=>p.category).filter(Boolean))];
+  $("#cats").innerHTML=cs.map(c=>`<button data-a="cat" data-c="${esc(c)}" class="${c===SL.cat?"on":""}">${esc(c)}</button>`).join("")}
+ACT.cat=b=>{SL.cat=b.dataset.c;drawCats();drawGrid()};
+function drawGrid(){drawTops();const t=SL.q.toLowerCase();
+  const list=SL.prods.filter(p=>(SL.cat==="All"||p.category===SL.cat)&&(p.name+" "+(p.barcode||"")).toLowerCase().includes(t));
+  $("#grid").innerHTML=list.map(p=>{const left=p.qty-inCart(p.id),out=!p.service&&left<=0;
+    return`<button class="p ${out?"out":""}" data-a="addp" data-id="${p.id}">${p.img?`<img class="pimg" loading="lazy" alt="" src="${imgUrl(p.img)}">`:""}<b>${esc(p.name)}</b><span>${p.offer!=null?`<s class="mu">${money(p.price)}</s> ${money(p.offer)}`:money(p.price)}</span><small>${p.alfa_service_id?pn(p)+" · "+p.alfa_amt+"$":p.alfa_card_id?pn(p)+" card · no stock":p.service?"Service":left+" in stock"}${p.track_imei?" · IMEI":""}${p.offer!=null?" · OFFER":""}</small></button>`}).join("")||'<p class="mu">No products yet — add some in Inventory.</p>'}
+INP.sq=el=>{SL.q=el.value;drawGrid()};
+INP.sbc=()=>{};
+document.addEventListener("keydown",async e=>{if(e.target.id==="bc"&&e.key==="Enter"){const c=e.target.value.trim();e.target.value="";if(!c)return;
+  const r=await act("scan",{code:c});if(!r)return;if(!r.d)return toast("Unknown barcode / IMEI: "+c);addProduct(r.d.product,r.d.imei)}});
+ACT.addp=b=>addProduct(SL.prods.find(p=>String(p.id)===b.dataset.id));
+async function addProduct(p,imei){
+  const price=p.offer!=null?p.offer:p.price,ex=SL.cart.find(l=>l.pid===p.id&&!l.imei);
+  if(p.service){ex?ex.qty++:SL.cart.push({id:SL.lid++,pid:p.id,name:p.name,qty:1,price,imei:"",svc:1})}
+  else if(p.track_imei){
+    const used=SL.cart.map(l=>l.imei);
+    if(!imei){const list=(await api("imeis",{product_id:p.id})).filter(i=>i.status==="in_stock"&&!used.includes(i.imei));
+      if(!list.length)return toast("No phones in stock for "+p.name);
+      imei=list.length===1?list[0].imei:await pickList("Choose IMEI — "+p.name,list.slice(0,60).map(i=>[i.imei,i.imei]));if(!imei)return}
+    if(used.includes(imei))return toast("That IMEI is already in the cart");
+    SL.cart.push({id:SL.lid++,pid:p.id,name:p.name,qty:1,price,imei})}
+  else{if(inCart(p.id)>=p.qty&&SET.allow_negative!=="1")return toast("No more stock");ex?ex.qty++:SL.cart.push({id:SL.lid++,pid:p.id,name:p.name,qty:1,price,imei:""})}
+  drawCart();drawGrid()}
+function drawCart(){
+  $("#lines").innerHTML=SL.cart.length?SL.cart.map(l=>`<div class="line"><div class="row"><span>${esc(l.name)}${l.imei?`<br><small class="mu">IMEI ${esc(l.imei)}</small>`:""}</span><b>${money(l.price*l.qty)}</b></div>
+  <div class="row"><span>${l.imei?"":`<button data-a="dec" data-id="${l.id}">−</button> ${l.qty} <button data-a="inc" data-id="${l.id}">+</button>`} <small class="mu">@ ${money(l.price)}</small> <button class="sm" data-a="ledit" data-id="${l.id}">Edit</button></span><button class="bad" data-a="rm" data-id="${l.id}">Remove</button></div></div>`).join(""):'<p class="mu">Tap a product or scan a barcode.</p>';upd()}
+const line=id=>SL.cart.find(l=>String(l.id)===String(id));
+ACT.rm=b=>{SL.cart=SL.cart.filter(l=>String(l.id)!==b.dataset.id);drawCart();drawGrid()};
+ACT.inc=b=>{const l=line(b.dataset.id),p=SL.prods.find(p=>p.id===l.pid);if(!l.svc&&inCart(l.pid)>=p.qty&&SET.allow_negative!=="1")return toast("No more stock");l.qty++;drawCart();drawGrid()};
+ACT.dec=b=>{const l=line(b.dataset.id);if(--l.qty<1)SL.cart=SL.cart.filter(x=>x!==l);drawCart();drawGrid()};
+ACT.ledit=async b=>{const l=line(b.dataset.id),f=[{k:"price",l:"Unit price",t:"number"}];if(!l.imei)f.push({k:"qty",l:"Quantity",t:"number"});
+  const d=await askForm(l.name,f,{price:l.price,qty:l.qty});if(!d)return;l.price=+d.price>=0?+d.price:l.price;if(d.qty!==undefined){const q=Math.floor(+d.qty);if(q>=1)l.qty=q}drawCart();drawGrid()};
+function drawAside(){
+  const c=cust(),k=SL.kind;
+  $("#aside").innerHTML=`<label>Customer</label><select data-c="scust"><option value="">Walk-in</option>${opts(SL.custs.map(c=>[c.id,c.name+(c.phone?" · "+c.phone:"")]),SL.cid)}</select>
+  <div class="mu" style="font-size:calc(13px*var(--fs,1));margin-top:3px">${c?`${c.points} points (worth ${money(c.points*(+SET.point_value||0))})`:""} <button class="sm" data-a="newc">+ New customer</button></div>
+  <div class="form" style="margin-top:4px"><div><label>Discount (${esc(cur())})</label><input type="number" min="0" step="any" value="${esc(SL.disc)}" data-i="sf" data-k="disc"></div>
+  <div><label>Use points</label><input type="number" min="0" step="1" value="${esc(SL.pts)}" ${c?"":"disabled"} data-i="sf" data-k="pts"></div></div>
+  <div class="row"><span>Total</span><b class="big" id="tot"></b></div>
+  <div class="chips">${[["cash","Paid in full"],["debt","Debt"],["installment","Installments"]].map(x=>`<button data-a="kind" data-k="${x[0]}" class="${k===x[0]?"on":""}">${x[1]}</button>`).join("")}</div>
+  ${k!=="cash"?`<div class="form"><div><label>Paid now (${SL.cur==="LBP"?"L.L":esc(cur())})</label><input type="number" min="0" step="any" value="${esc(SL.paid)}" data-i="sf" data-k="paid"></div>
+   <div><label>${k==="debt"?"Due date":"First installment"}</label><input type="date" value="${esc(SL.due)}" data-i="sf" data-k="due"></div>
+   ${k==="installment"?`<div><label>Number of installments</label><input type="number" min="1" max="60" value="${esc(SL.ninst)}" data-i="sf" data-k="ninst"></div>`:""}</div><div id="instinfo" class="mu"></div>`:""}
+  <label>Payment method</label><select data-c="sf" data-k="method">${opts(METHODS,SL.method)}</select>
+  <label>Customer pays in</label><select data-c="sf" data-k="cur">${opts(["USD","LBP"],SL.cur)}</select>
+  ${k==="cash"&&SL.method==="Cash"?`<label>Cash received (${SL.cur==="LBP"?"L.L":esc(cur())})</label><input type="number" min="0" step="any" value="${esc(SL.cash)}" data-i="sf" data-k="cash"><div id="chg" class="mu"></div>`:""}
+  <label>Notes</label><input value="${esc(SL.notes)}" data-i="sf" data-k="notes">
+  <div class="row" style="margin-top:12px"><button data-a="clr">Clear</button><button class="pri" data-a="done">Complete sale</button></div>`;upd()}
+INP.sf=el=>{SL[el.dataset.k]=el.value;upd()};CHG.sf=el=>{SL[el.dataset.k]=el.value;drawAside()};
+CHG.scust=el=>{SL.cid=el.value;SL.pts="";drawAside()};
+ACT.kind=b=>{SL.kind=b.dataset.k;if(SL.kind!=="cash"){SL.paid="0";if(!SL.due)SL.due=addDays(30)}drawAside()};
+ACT.clr=()=>{Object.assign(SL,{cart:[],disc:"",pts:"",cash:"",cid:"",kind:"cash",paid:"0",notes:"",due:""});drawCart();drawGrid();drawAside()};
+ACT.done=()=>complete();
+ACT.newc=async()=>{const d=await askForm("New customer",[{k:"name",l:"Name"},{k:"phone",l:"Phone"}]);if(!d)return;
+  const r=await act("customer_save",d);if(!r)return;SL.custs=await api("customers_min");SL.cid=String(r.d);drawAside()};
+function upd(){const t=total(),e=$("#tot");if(!e)return;e.innerHTML=money(t)+(rate()?` <small class="mu">${lbp(t)}</small>`:"");
+  const c=$("#chg");if(c){const v=toUSD(SL.cash),fm=n=>SL.cur==="LBP"?lbp(n):money(n);c.textContent=SL.cash===""?"":v>=t-.004?"Change: "+fm(v-t):"Short by "+fm(t-v)}
+  const i=$("#instinfo");if(i){const bal=Math.max(0,t-toUSD(SL.paid));i.textContent=SL.kind==="installment"?`Balance ${money(bal)} → ${SL.ninst||3} × ${money(bal/(+SL.ninst||3))}`:`Balance ${money(bal)}`}}
+async function complete(){
+  if(!SL.cart.length)return toast("Cart is empty");
+  const t=total(),r=await act("sale_create",{cart:SL.cart.map(l=>({pid:l.pid,qty:l.qty,price:l.price,imei:l.imei,name:l.name,cost:l.cost,topup:l.topup,player:l.player})),customer_id:SL.cid||null,discount:+SL.disc||0,points_used:ptsUsed(),
+    paid:SL.kind==="cash"?t:(+SL.paid||0),cur:SL.cur,method:SL.method,kind:SL.kind,due:SL.due,notes:SL.notes,inst_n:+SL.ninst||3});
+  if(!r)return;Object.assign(SL,{cart:[],disc:"",pts:"",cash:"",cid:"",kind:"cash",paid:"0",notes:"",due:""});await viewSell();showReceipt(r.d);toast("Sale saved")}
+
+/* ================= sales log + drawer ================= */
+let SA={d1:"",d2:"",q:""};
+async function viewSales(){
+  SA.d1=SA.d1||todayS();SA.d2=SA.d2||todayS();
+  const[dr,ls,mv]=await Promise.all([api("drawer"),api("sales_list",{d1:SA.d1,d2:SA.d2,q:SA.q}),api("cash_moves",{})]);
+  const rev=ls.reduce((a,s)=>a+s.total,0),prof=ls.reduce((a,s)=>a+s.profit,0),out=ls.reduce((a,s)=>a+Math.max(0,s.balance),0);
+  const fl=dr.history.length?dr.last_counted:0;
+  $("#main").innerHTML=`<div class="card mb"><h3>Cash drawer close-out</h3>
+  <div class="mu">Since ${dr.since?ft(dr.since):"the beginning"}: ${dr.count} sales · Cash ${money(dr.cash)} + ${Math.round(dr.cash_lbp).toLocaleString("en-US")} L.L · Card ${money(dr.card)} · Transfer ${money(dr.transfer)}</div>
+  <div class="form"><div><label>Opening float (${esc(cur())})</label><input id="fl" type="number" step="any" value="${fl}"></div><div><label>Counted cash (${esc(cur())})</label><input id="cc" type="number" step="any"></div>
+  <div><label>Expected (${esc(cur())})</label><b id="xp"></b></div><div><label>Difference</label><b id="df"></b></div></div>
+  <div class="form"><div><label>Opening float (L.L)</label><input id="fll" type="number" step="any" value="${dr.history.length?dr.last_counted_lbp:0}"></div><div><label>Counted cash (L.L)</label><input id="ccl" type="number" step="any"></div>
+  <div><label>Expected (L.L)</label><b id="xpl"></b></div><div><label>Difference</label><b id="dfl"></b></div><div><button class="pri" data-a="close" id="clb">Close drawer</button></div></div>
+  <details style="margin-top:8px"><summary class="mu">Cash in / out (${mv.length} today)</summary>
+  <div class="form" style="margin-top:6px"><div><label>Type</label><select id="mvk">${opts([["in","Cash in"],["out","Cash out"]])}</select></div><div><label>Amount</label><input id="mva" type="number" step="any"></div>
+  <div><label>Currency</label><select id="mvc">${opts(["USD","LBP"])}</select></div><div><label>Reason</label><input id="mvr"></div><div><button data-a="mvadd">Add</button></div></div>
+  ${T(["Time","Type","Amount","Reason","By",""],mv.map(r=>`<tr><td>${ft(r.date)}</td><td>${r.kind==="in"?"Cash in":"Cash out"}</td><td>${r.cur==="LBP"?Math.round(r.amount).toLocaleString("en-US")+" L.L":money(r.amount)}</td><td>${esc(r.reason)}</td><td>${esc(r.user)}</td><td><button class="sm bad" data-a="mvdel" data-id="${r.id}">Delete</button></td></tr>`),"No cash movements.")}</details>
+  ${dr.history.length?`<details style="margin-top:8px"><summary class="mu">Past closes</summary>${dr.history.map(c=>`<div class="row"><span>${ft(c.date)}</span><span>Counted ${money(c.counted)} · <b class="${Math.abs(c.diff)>.005?"low":""}">${c.diff>=0?"+":""}${money(c.diff)}</b> · ${Math.round(c.counted_lbp||0).toLocaleString("en-US")} L.L · <b class="${Math.abs(c.diff_lbp||0)>.5?"low":""}">${(c.diff_lbp||0)>=0?"+":""}${Math.round(c.diff_lbp||0).toLocaleString("en-US")}</b></span></div>`).join("")}</details>`:""}</div>
+  <div class="card mb"><div class="form"><div><label>From</label><input type="date" id="sd1" value="${SA.d1}"></div><div><label>To</label><input type="date" id="sd2" value="${SA.d2}"></div>
+  <div><label>Search (customer, item, IMEI, #)</label><input id="sq2" value="${esc(SA.q)}"></div><div><button class="pri" data-a="sfind">Search</button></div></div>
+  <div class="chips"><button data-a="srange" data-r="today">Today</button><button data-a="srange" data-r="month">This month</button><button data-a="srange" data-r="all">All time</button></div></div>
+  <div class="kpis"><div class="card"><span class="mu">Sales</span><b>${ls.length}</b></div><div class="card"><span class="mu">Revenue</span><b>${money(rev)}</b></div><div class="card"><span class="mu">Profit</span><b>${money(prof)}</b></div><div class="card"><span class="mu">Unpaid balances</span><b>${money(out)}</b></div></div>
+  ${T(["#","Time","Items","Customer","Type","Total","Balance",""],ls.map(s=>`<tr><td>${s.id}</td><td>${ft(s.date)}</td><td class="pre">${esc(s.items)}</td><td>${esc(s.customer)}</td><td>${esc(s.kind)}</td><td>${money(s.total)}</td><td class="${s.balance>.004?"low":""}">${s.balance>.004?money(s.balance):"—"}</td>
+  <td><button class="sm" data-a="rcpt" data-id="${s.id}">Receipt</button> ${s.balance>.004?`<button class="sm pri" data-a="spay" data-id="${s.id}" data-b="${s.balance}">Pay</button> `:""}<button class="sm" data-a="sret" data-id="${s.id}">Return</button> <button class="sm bad" data-a="svoid" data-id="${s.id}">Void</button></td></tr>`),"No sales in this period.")}`;
+  const calc=()=>{const x=(+$("#fl").value||0)+dr.cash,c=$("#cc").value,xl=(+$("#fll").value||0)+dr.cash_lbp,cl=$("#ccl").value,L=n=>Math.round(n).toLocaleString("en-US")+" L.L";
+    $("#xp").textContent=money(x);$("#df").textContent=c===""?"—":money((+c)-x);$("#xpl").textContent=L(xl);$("#dfl").textContent=cl===""?"—":L((+cl)-xl)};calc();["fl","cc","fll","ccl"].forEach(i=>$("#"+i).oninput=calc)}
+ACT.close=async()=>{const c=$("#cc").value,cl=$("#ccl").value;if(c===""||cl==="")return toast("Enter the counted cash in USD and in L.L (0 if none)");const r=await act("drawer_close",{float:+$("#fl").value||0,counted:+c,float_lbp:+$("#fll").value||0,counted_lbp:+cl},"Drawer closed - backup started");if(r)viewSales()};
+ACT.mvadd=async()=>{if(await act("cash_move_save",{kind:$("#mvk").value,amount:$("#mva").value,cur:$("#mvc").value,reason:$("#mvr").value},"Saved"))viewSales()};
+ACT.mvdel=b=>sure(b,async()=>{if(await act("cash_move_delete",{id:b.dataset.id}))viewSales()});
+ACT.sfind=()=>{SA.d1=$("#sd1").value;SA.d2=$("#sd2").value;SA.q=$("#sq2").value;viewSales()};
+ACT.srange=b=>{const r=b.dataset.r;SA.d2=todayS();SA.d1=r==="today"?todayS():r==="month"?todayS().slice(0,8)+"01":"2000-01-01";SA.q="";viewSales()};
+ACT.spay=async b=>{const d=await askForm("Receive payment",[{k:"amount",l:"Amount (in the chosen currency)",t:"number"},{k:"cur",l:"Currency",t:"select",o:["USD","LBP"]},{k:"method",l:"Method",t:"select",o:METHODS},{k:"note",l:"Note"}],{amount:fix(b.dataset.b),cur:"USD",method:"Cash"});
+  if(d&&await act("sale_pay",{sale_id:b.dataset.id,...d},"Payment saved"))viewSales()};
+ACT.sret=async b=>{const r=await act("sale_get",{id:b.dataset.id});if(!r)return;const its=r.d.items.filter(i=>i.qty-i.returned>0);
+  if(!its.length)return toast("Nothing left to return on this invoice");
+  const d=await askForm("Return item — invoice #"+b.dataset.id,[{k:"item_id",l:"Item",t:"select",o:its.map(i=>[i.id,`${i.name}${i.imei?" ("+i.imei+")":""} — up to ${i.qty-i.returned}`])},{k:"qty",l:"Quantity",t:"number"},{k:"note",l:"Reason"}],{qty:1});
+  if(!d)return;const x=await act("sale_return",d);if(x){toast("Returned. Credit / refund: "+money(x.d));viewSales()}};
+ACT.svoid=b=>sure(b,async()=>{if(await act("sale_void",{id:b.dataset.id},"Invoice voided, stock restored"))viewSales()});
+
+/* ================= inventory ================= */
+let IV={edit:null,q:"",cat:"All",low:0};
+const PTYPES=[["stock","Stock item"],["imei","Phone (tracked by IMEI)"],["service","Service (no stock)"]];
+async function viewInv(){
+  const all=await api("products",{}),e=all.find(p=>p.id===IV.edit)||{name:"",category:"",price:"",cost:"",qty:0,min_qty:2,track_imei:0,service:0,barcode:"",warranty:""};
+  const cats=[...new Set(all.map(p=>p.category).filter(Boolean))];
+  $("#main").innerHTML=`<div class="card mb"><div class="sc"><input id="isc" placeholder="Scan a barcode here to add stock or create a new product (then Enter)"></div></div>
+  <div class="card mb"><h3>${IV.edit?"Edit product":"Add product"}</h3><div class="form" id="pf">
+  <div><label>Name</label><input id="fn" value="${esc(e.name)}"></div><div><label>Category</label><input id="fc" list="cl" value="${esc(e.category)}"><datalist id="cl">${[...new Set(["Phones","Accessories","Alfa Cards","Touch Cards","Audio",...cats])].map(c=>`<option>${esc(c)}</option>`).join("")}</datalist></div>
+  <div><label>Type</label><select id="ft">${opts(PTYPES,e.service?"service":e.track_imei?"imei":"stock")}</select></div>
+  <div><label>Price</label><input id="fp" type="number" step="any" value="${esc(e.price)}"></div><div><label>Cost</label><input id="fo" type="number" step="any" value="${esc(e.cost)}"></div>
+  <div><label>Stock ${IV.edit?"":"(phones: add IMEIs after saving)"}</label><input id="fs" type="number" value="${e.qty}"></div><div><label>Alert when stock ≤</label><input id="fm" type="number" value="${e.min_qty}"></div>
+  <div><label>Barcode (blank = auto)</label><input id="fb" value="${esc(e.barcode)}"></div><div><label>Warranty (days)</label><input id="fw" type="number" value="${esc(e.warranty)}"></div>
+  <div><button class="pri" data-a="psave">${IV.edit?"Save changes":"Add product"}</button> ${IV.edit?'<button data-a="pcancel">Cancel</button>':""}</div></div></div>
+  <div class="card mb"><div class="form"><div><label>Search</label><input id="iq" data-i="iq" value="${esc(IV.q)}" placeholder="Name, barcode, IMEI"></div><div><label>Category</label><select data-c="icat">${opts(["All",...cats],IV.cat)}</select></div>
+  <div><button data-a="ilow" class="${IV.low?"on":""}">Low stock only</button> <button data-a="plabels">Print labels</button> <button data-a="bulkp">Bulk price change</button> <button data-a="iexp">Export to Excel</button> <button data-a="iexp2">Export phone IMEIs</button> <span id="undoslot"></span></div></div></div><div id="ilist"></div>`;drawInv();if(!IV.edit){const sc=$("#isc");if(sc)sc.focus()}loadUndo()}
+async function drawInv(){
+  const l=await api("products",{q:IV.q,cat:IV.cat,low:IV.low}),val=l.filter(p=>!p.service).reduce((a,p)=>a+Math.max(0,p.qty)*p.cost,0);
+  $("#ilist").innerHTML=T(["Name","Category","Price","Cost","Stock","Barcode",""],l.map(p=>`<tr><td>${p.img?`<img class="th" style="width:calc(30px*var(--pic,1));height:calc(30px*var(--pic,1));vertical-align:middle;margin-right:8px" alt="" src="${imgUrl(p.img)}">`:""}${esc(p.name)} ${p.track_imei?'<span class="tag">IMEI</span>':""}${p.alfa_service_id?`<span class="tag ok">${pn(p)} service</span>`:p.alfa_card_id?`<span class="tag ok">${pn(p)} card</span>`:p.service?'<span class="tag">Service</span>':""}${p.warranty?` <small class="mu">${p.warranty}d warranty</small>`:""}</td><td>${esc(p.category)}</td>
+  <td>${p.offer!=null?`<s class="mu">${money(p.price)}</s> ${money(p.offer)}`:money(p.price)}</td><td>${p.alfa_service_id?p.alfa_amt+"$ "+pn(p):money(p.cost)}</td><td class="${!p.service&&p.qty<=p.min_qty?"low":""}">${p.service?"—":p.qty}</td><td>${esc(p.barcode)}</td>
+  <td>${p.alfa_service_id?`<button class="sm" data-a="goto" data-t="${pn(p)==="Touch"?"touch":"alfa"}">Edit in ${pn(p)} tab</button>`:p.alfa_card_id?`<button class="sm" data-a="goto" data-t="${pn(p)==="Touch"?"touch":"alfa"}">Edit in ${pn(p)} tab</button>`:`<button class="sm" data-a="pedit" data-id="${p.id}">Edit</button> <button class="sm" data-a="plabel" data-id="${p.id}">Label</button> ${p.track_imei?`<button class="sm" data-a="pimei" data-id="${p.id}">IMEIs</button> `:""}<button class="sm bad" data-a="pdel" data-id="${p.id}">Delete</button>`}</td></tr>`))+`<p class="mu right">Stock value at cost: ${money(val)}</p>`}
+INP.iq=el=>{IV.q=el.value;drawInv()};CHG.icat=el=>{IV.cat=el.value;drawInv()};
+ACT.ilow=b=>{IV.low=IV.low?0:1;b.classList.toggle("on");drawInv()};
+document.addEventListener("keydown",async e=>{if(e.target.id!=="isc"||e.key!=="Enter")return;e.preventDefault();const code=e.target.value.trim();e.target.value="";if(!code)return;
+  const r=await act("scan",{code});if(!r)return;
+  if(r.d){const p=r.d.product;
+    if(p.track_imei){if(r.d.imei)return toast("This phone is already in stock: "+p.name);return ACT.pimei({dataset:{id:p.id}})}
+    const f=await askForm("Add stock — "+p.name+" (now "+p.qty+")",[{k:"qty",l:"Quantity to add",t:"number"}],{qty:1},"Add");
+    if(f&&await act("stock_add",{id:p.id,qty:f.qty},"Stock added")){await viewInv()}
+    return}
+  IV.edit=null;await viewInv();$("#fb").value=code;$("#fn").focus();toast("New barcode — type the name and the details, then Add product")});
+ACT.pedit=b=>{IV.edit=+b.dataset.id;viewInv();window.scrollTo(0,0)};ACT.pcancel=()=>{IV.edit=null;viewInv()};
+ACT.pdel=b=>sure(b,async()=>{if(await act("product_delete",{id:b.dataset.id}))drawInv()});
+ACT.psave=async()=>{const t=$("#ft").value,r=await act("product_save",{id:IV.edit,name:$("#fn").value,category:$("#fc").value,price:$("#fp").value,cost:$("#fo").value,qty:$("#fs").value,min_qty:$("#fm").value,
+  track_imei:t==="imei",service:t==="service",barcode:$("#fb").value,warranty:$("#fw").value},"Saved");if(r){const wasNew=!IV.edit;IV.edit=null;await viewInv();if(wasNew&&t==="imei")toast("Saved — use the IMEIs button to add phones")}};
+ACT.pimei=async b=>{const id=+b.dataset.id,p=(await api("products",{})).find(p=>p.id===id),L=await api("imeis",{product_id:id});
+  openModal(`<h3>IMEIs — ${esc(p.name)}</h3><div class="mu">In stock: ${L.filter(i=>i.status==="in_stock").length}</div>${T(["IMEI","Status",""],L.map(i=>`<tr><td>${esc(i.imei)}</td><td>${tag(i.status==="in_stock"?"Active":i.status)}</td><td>${i.status==="in_stock"?`<button class="sm bad" data-a="imrm" data-id="${i.id}" data-p="${id}">Remove</button>`:""}</td></tr>`),"No IMEIs yet.")}
+  <label>Add IMEIs (one per line, or scan them)</label><textarea id="imt" rows="4"></textarea><div class="row"><button data-a="mclose">Close</button><button class="pri" data-a="imadd" data-p="${id}">Add</button></div>`,true)};
+ACT.imadd=async b=>{if(await act("imeis_add",{product_id:b.dataset.p,text:$("#imt").value},"IMEIs added")){await ACT.pimei({dataset:{id:b.dataset.p}});drawInv()}};
+ACT.imrm=b=>sure(b,async()=>{if(await act("imei_remove",{id:b.dataset.id})){await ACT.pimei({dataset:{id:b.dataset.p}});drawInv()}});
+
+/* ================= customers ================= */
+let CU={q:"",debt:0,wq:""};
+async function viewCus(){
+  $("#main").innerHTML=`<div class="card mb"><h3>Warranty check</h3><input id="wq" data-i="wq" placeholder="IMEI, receipt no., customer name or phone" value="${esc(CU.wq)}"><div id="wr" style="margin-top:8px"></div></div>
+  <div class="card mb"><h3>Add customer</h3><div class="form"><div><label>Name</label><input id="cn"></div><div><label>Phone</label><input id="cp"></div><div><label>Address</label><input id="ca"></div><div><button class="pri" data-a="cadd">Add</button></div></div></div>
+  <div class="card mb"><div class="form"><div><label>Search</label><input data-i="cq" value="${esc(CU.q)}" placeholder="Name or phone"></div><div><button data-a="cdebt" class="${CU.debt?"on":""}">Only debtors</button></div></div></div><div id="clist"></div>`;drawCus();drawWar()}
+async function drawWar(){const q=CU.wq.trim();if(!q){$("#wr").innerHTML="";return}const L=await api("warranty",{q}),n=todayS();
+  $("#wr").innerHTML=L.map(r=>{const w=r.warranty_until?(r.warranty_until>=n?`<b class="okc">Warranty active until ${r.warranty_until}</b>`:`<b class="low">Warranty expired ${r.warranty_until}</b>`):'<span class="mu">No warranty</span>';
+    return`<div class="line"><div class="row"><span>${esc(r.name)}${r.imei?" · "+esc(r.imei):""}</span>${w}</div><small class="mu">Receipt #${r.sale_id} · ${fd(r.date)}${r.customer?" · "+esc(r.customer):""}</small></div>`}).join("")||'<p class="mu">No match.</p>'}
+INP.wq=el=>{CU.wq=el.value;drawWar()};INP.cq=el=>{CU.q=el.value;drawCus()};
+ACT.cdebt=b=>{CU.debt=CU.debt?0:1;b.classList.toggle("on");drawCus()};
+async function drawCus(){const L=await api("customers",{q:CU.q,debtors:CU.debt});
+  $("#clist").innerHTML=T(["Name","Phone","Points","Balance","Purchases","Spent","Active warranties",""],L.map(c=>`<tr><td><a href="#" data-a="cprof" data-id="${c.id}" style="color:var(--ac)">${esc(c.name)}</a></td><td>${esc(c.phone)}</td><td>${c.points}</td><td class="${c.balance>0?"low":""}">${c.balance>0?money(c.balance):"—"}</td><td>${c.purchases}</td><td>${money(c.spent)}</td><td>${c.warranties}</td>
+  <td><button class="sm" data-a="cprof" data-id="${c.id}">Open</button> ${c.balance>0?`<button class="sm pri" data-a="cpay" data-id="${c.id}" data-b="${c.balance}">Pay</button> <button class="sm" data-a="wa" data-n="${esc(c.name)}" data-p="${esc(c.phone)}" data-m="${c.balance}">Remind</button> `:""}<button class="sm" data-a="cedit" data-id="${c.id}">Edit</button> <button class="sm bad" data-a="cdel" data-id="${c.id}">Delete</button></td></tr>`),"No customers yet.")}
+ACT.cadd=async()=>{if(await act("customer_save",{name:$("#cn").value,phone:$("#cp").value,address:$("#ca").value},"Customer added"))viewCus()};
+ACT.cdel=b=>sure(b,async()=>{if(await act("customer_delete",{id:b.dataset.id}))drawCus()});
+ACT.cedit=async b=>{const r=await api("customer_get",{id:b.dataset.id}),c=r.customer;
+  const d=await askForm("Edit customer",[{k:"name",l:"Name"},{k:"phone",l:"Phone"},{k:"address",l:"Address"},{k:"notes",l:"Notes"}],c);if(d&&await act("customer_save",{...d,id:c.id}))drawCus()};
+ACT.cpay=async b=>{const d=await askForm("Receive payment",[{k:"amount",l:"Amount (in the chosen currency)",t:"number"},{k:"cur",l:"Currency",t:"select",o:["USD","LBP"]},{k:"method",l:"Method",t:"select",o:METHODS},{k:"note",l:"Note"}],{amount:fix(b.dataset.b),cur:"USD",method:"Cash"});
+  if(d&&await act("customer_pay",{id:b.dataset.id,...d},"Payment saved")){if($("#clist"))drawCus();if(PROF)ACT.cprof({dataset:{id:PROF}})}};
+let PROF=null,PROFR=null;
+ACT.cprof=async b=>{const id=b.dataset.id,r=await api("customer_get",{id});PROF=id;PROFR=r;modalClose=()=>PROF=null;const c=r.customer;
+  openModal(`<h3>${esc(c.name)} <small class="mu">${esc(c.phone)}</small></h3><div class="row"><span>Balance: <b class="${c.balance>0?"low":""}">${money(c.balance)}</b> · Points: <b>${c.points}</b></span><span>${c.balance>0?`<button class="pri sm" data-a="cpay" data-id="${c.id}" data-b="${c.balance}">Receive payment</button> <button class="sm" data-a="wa" data-n="${esc(c.name)}" data-p="${esc(c.phone)}" data-m="${c.balance}">Remind</button>`:""}</span></div>
+  <h3>Invoices</h3>${T(["#","Date","Total","Balance","Due",""],r.sales.map(s=>`<tr><td>${s.id}</td><td>${fd(s.date)}</td><td>${money(s.total)}</td><td class="${s.balance>.004?"low":""}">${s.balance>.004?money(s.balance):"—"}</td><td>${fd(s.due_date)}</td><td><button class="sm" data-a="rcpt" data-id="${s.id}">Receipt</button></td></tr>`),"No invoices.")}
+  ${r.installments.length?`<h3 style="margin-top:12px">Installments</h3>${T(["Invoice","#","Due","Amount","Remaining","Status"],r.installments.map(i=>{const st=i.remaining<=.004?"Paid":i.due_date<todayS()?"Overdue":"Upcoming";return`<tr><td>#${i.sale_id}</td><td>${i.no}</td><td>${i.due_date}</td><td>${money(i.amount)}</td><td>${money(i.remaining)}</td><td>${tag(st)}</td></tr>`}))}`:""}
+  <h3 style="margin-top:12px">Payments</h3>${T(["Date","Invoice","Amount","Method"],r.payments.map(p=>`<tr><td>${ft(p.date)}</td><td>#${p.sale_id}</td><td>${money(p.amount)}</td><td>${esc(p.method)}</td></tr>`),"No payments.")}
+  <div class="row"><span><button data-a="printl">Print statement</button> <button data-a="cwa">WhatsApp statement</button></span><button data-a="mclose">Close</button></div>`,true)};
+
+/* ================= installments & debts ================= */
+let DB={flt:"Unpaid"};
+async function viewDebt(){
+  const[ins,dbs]=await Promise.all([api("installments",{flt:DB.flt}),api("debts")]);
+  $("#main").innerHTML=`<div class="chips">${["Unpaid","Overdue","Due in 7 days","Paid"].map(f=>`<button data-a="dflt" data-f="${f}" class="${DB.flt===f?"on":""}">${f}</button>`).join("")}</div>
+  <h3>Installments</h3>${T(["Customer","Phone","Invoice","#","Due","Amount","Remaining","Status",""],ins.map(r=>`<tr class="${r.status==="Overdue"?"hl":""}"><td>${esc(r.customer)}</td><td>${esc(r.phone)}</td><td>#${r.sale_id}</td><td>${r.no}</td><td>${r.due_date}</td><td>${money(r.amount)}</td><td>${money(r.remaining)}</td><td>${tag(r.status)}</td>
+  <td>${r.remaining>.004?`<button class="sm pri" data-a="spay" data-id="${r.sale_id}" data-b="${r.remaining}">Receive</button> <button class="sm" data-a="wa" data-n="${esc(r.customer)}" data-p="${esc(r.phone)}" data-m="${r.remaining}">Remind</button>`:""}</td></tr>`),"No installments.")}
+  <h3 style="margin-top:14px">All unpaid invoices (debts)</h3>${T(["Invoice","Date","Customer","Phone","Total","Balance","Due","Status",""],dbs.map(r=>`<tr class="${r.status==="Overdue"?"hl":""}"><td>#${r.id}</td><td>${r.date}</td><td>${esc(r.customer)}</td><td>${esc(r.phone)}</td><td>${money(r.total)}</td><td><b>${money(r.balance)}</b></td><td>${fd(r.due_date)}</td><td>${tag(r.status)}</td>
+  <td><button class="sm pri" data-a="spay" data-id="${r.id}" data-b="${r.balance}">Receive</button> <button class="sm" data-a="wa" data-n="${esc(r.customer)}" data-p="${esc(r.phone)}" data-m="${r.balance}">Remind</button></td></tr>`),"No debts. 🎉")}`}
+ACT.dflt=b=>{DB.flt=b.dataset.f;viewDebt()};
+
+/* ================= suppliers ================= */
+let PD=null;
+async function viewSup(){
+  if(PD)return viewPurchase();
+  const L=await api("suppliers");
+  $("#main").innerHTML=`<div class="card mb"><h3>Add supplier</h3><div class="form"><div><label>Name</label><input id="sn1"></div><div><label>Phone</label><input id="sp1"></div><div><label>Notes</label><input id="sx1"></div><div><button class="pri" data-a="sadd">Add</button></div></div></div>
+  ${T(["Supplier","Phone","Purchases","Paid","Returns","Balance owed",""],L.map(s=>`<tr><td><a href="#" data-a="sstmt" data-id="${s.id}" style="color:var(--ac)">${esc(s.name)}</a></td><td>${esc(s.phone)}</td><td>${money(s.purchases)}</td><td>${money(s.paid)}</td><td>${money(s.returns)}</td><td class="${s.balance>0?"low":""}"><b>${money(s.balance)}</b></td>
+  <td><button class="sm pri" data-a="pnew" data-id="${s.id}">New purchase</button> <button class="sm" data-a="spaysup" data-id="${s.id}" data-b="${s.balance}">Pay</button> <button class="sm" data-a="sretn" data-id="${s.id}">Return goods</button> <button class="sm" data-a="sstmt" data-id="${s.id}">Statement</button> <button class="sm" data-a="sedit" data-id="${s.id}">Edit</button></td></tr>`),"No suppliers yet.")}`}
+ACT.sadd=async()=>{if(await act("supplier_save",{name:$("#sn1").value,phone:$("#sp1").value,notes:$("#sx1").value},"Supplier added"))viewSup()};
+ACT.sedit=async b=>{const s=(await api("supplier_get",{id:b.dataset.id})).supplier,d=await askForm("Edit supplier",[{k:"name",l:"Name"},{k:"phone",l:"Phone"},{k:"notes",l:"Notes"}],s);if(d&&await act("supplier_save",{...d,id:s.id}))viewSup()};
+ACT.spaysup=async b=>{const d=await askForm("Pay supplier",[{k:"amount",l:"Amount",t:"number"},{k:"method",l:"Method",t:"select",o:METHODS},{k:"date",l:"Date",t:"date"},{k:"note",l:"Note"}],{amount:Math.max(0,fix(b.dataset.b)),method:"Cash",date:todayS()});
+  if(d&&await act("supplier_pay",{id:b.dataset.id,...d},"Payment saved"))viewSup()};
+ACT.sretn=async b=>{const ps=(await api("products",{})).filter(p=>!p.service),d0=await askForm("Return goods — choose product",[{k:"pid",l:"Product",t:"select",o:ps.map(p=>[p.id,p.name+(p.track_imei?" (IMEI)":" — stock "+p.qty)])}]);if(!d0)return;
+  const p=ps.find(p=>String(p.id)===d0.pid),f=p.track_imei?[{k:"imei",l:"IMEI"}]:[{k:"qty",l:"Quantity",t:"number"}];
+  const d=await askForm("Return "+p.name,[...f,{k:"amount",l:"Credit amount from supplier",t:"number"},{k:"note",l:"Reason"}],{qty:1,amount:p.cost});
+  if(d&&await act("supplier_return",{supplier_id:b.dataset.id,product_id:p.id,...d},"Return recorded"))viewSup()};
+ACT.sstmt=async b=>{const r=await api("supplier_get",{id:b.dataset.id}),s=r.supplier;
+  openModal(`<h3>${esc(s.name)} — statement</h3><div class="row"><span>Balance owed: <b class="${r.balance>0?"low":""}">${money(r.balance)}</b></span><button data-a="mclose">Close</button></div>
+  <h3>Items delivered</h3>${T(["Date","Invoice","Product","Qty","Cost","IMEIs"],r.items.map(i=>`<tr><td>${fd(i.date)}</td><td>${esc(i.invoice)}</td><td>${esc(i.name)}</td><td>${i.qty}</td><td>${money(i.cost)}</td><td><small class="mu">${esc(i.imeis)}</small></td></tr>`),"No purchases yet.")}
+  <h3 style="margin-top:12px">Invoices</h3>${T(["Date","Invoice","Total"],r.purchases.map(p=>`<tr><td>${fd(p.date)}</td><td>${esc(p.invoice_no||"#"+p.id)}</td><td>${money(p.total)}</td></tr>`))}
+  <h3 style="margin-top:12px">Payments</h3>${T(["Date","Amount","Method","Note"],r.payments.map(p=>`<tr><td>${fd(p.date)}</td><td>${money(p.amount)}</td><td>${esc(p.method)}</td><td>${esc(p.note)}</td></tr>`))}
+  <h3 style="margin-top:12px">Returns</h3>${T(["Date","Product","Qty","Credit","IMEI"],r.returns.map(p=>`<tr><td>${fd(p.date)}</td><td>${esc(p.name)}</td><td>${p.qty}</td><td>${money(p.amount)}</td><td>${esc(p.imei)}</td></tr>`))}`,true)};
+ACT.pnew=async b=>{PD={sid:b.dataset.id,inv:"",date:todayS(),items:[],paid:"0",method:"Cash",pid:"",qty:"1",cost:"",imeis:""};viewSup()};
+async function viewPurchase(){
+  const sup=(await api("supplier_get",{id:PD.sid})).supplier,ps=(await api("products",{})).filter(p=>!p.service),p=ps.find(x=>String(x.id)===String(PD.pid));
+  const tot=PD.items.reduce((a,i)=>a+i.qty*i.cost,0);
+  $("#main").innerHTML=`<div class="card mb"><div class="row"><h3 style="margin:0">Purchase invoice — ${esc(sup.name)}</h3><button data-a="pcancelp">Cancel</button></div>
+  <div class="form"><div><label>Supplier invoice no.</label><input data-i="pd" data-k="inv" value="${esc(PD.inv)}"></div><div><label>Date</label><input type="date" data-i="pd" data-k="date" value="${PD.date}"></div></div></div>
+  <div class="card mb"><h3>Add item</h3><div class="form"><div><label>Product</label><select data-c="pdp"><option value="">Choose…</option>${opts(ps.map(x=>[x.id,x.name+(x.track_imei?" (IMEI)":" — stock "+x.qty)]),PD.pid)}</select></div>
+  ${p&&p.track_imei?"":`<div><label>Quantity</label><input type="number" data-i="pd" data-k="qty" value="${esc(PD.qty)}"></div>`}<div><label>Unit cost</label><input type="number" step="any" data-i="pd" data-k="cost" value="${esc(PD.cost)}"></div>
+  <div><button class="pri" data-a="pdadd">Add to invoice</button> <button data-a="pdnewp">New product</button> <button data-a="pdimport">Import invoice file (Excel / CSV)</button><input type="file" id="invf" accept=".csv,.xlsx,.xlsm" style="display:none" data-c="invfile"></div></div>
+  ${p&&p.track_imei?`<label>IMEIs (one per line — scan them)</label><textarea rows="4" data-i="pd" data-k="imeis">${esc(PD.imeis)}</textarea>`:""}</div>
+  ${T(["Product","Qty","Cost","Total",""],PD.items.map((i,n)=>`<tr><td>${esc(i.name)}${i.imeis?`<br><small class="mu">${esc(i.imeis.split(/[\s,;]+/).filter(Boolean).join(", "))}</small>`:""}</td><td>${i.qty}</td><td>${money(i.cost)}</td><td>${money(i.qty*i.cost)}</td><td><button class="sm bad" data-a="pdrm" data-n="${n}">Remove</button></td></tr>`),"No items yet.")}
+  <div class="card" style="margin-top:12px"><div class="form"><div><label>Invoice total</label><b class="big">${money(tot)}</b></div><div><label>Paid now</label><input type="number" step="any" data-i="pd" data-k="paid" value="${esc(PD.paid)}"></div>
+  <div><label>Method</label><select data-c="pd" data-k="method">${opts(METHODS,PD.method)}</select></div><div><button class="pri" data-a="pdsave">Save invoice</button></div></div></div>`}
+INP.pd=el=>{PD[el.dataset.k]=el.value};CHG.pd=el=>{PD[el.dataset.k]=el.value};
+CHG.pdp=async el=>{PD.pid=el.value;const p=(await api("products",{})).find(x=>String(x.id)===el.value);PD.cost=p?p.cost:"";viewPurchase()};
+ACT.pdimport=()=>{const f=$("#invf");f.value="";f.click()};
+CHG.invfile=async el=>{const f=el.files[0];if(!f)return;
+  const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]||"");r.onerror=rej;r.readAsDataURL(f)});
+  const r=await act("invoice_parse",{name:f.name,b64});if(!r)return;IMP={rows:r.d};showImport()};
+let IMP={rows:[]};
+function showImport(){const L=IMP.rows,ok=L.filter(x=>!x.error),newN=ok.filter(x=>!x.pid).length;
+  openModal(`<h3>Invoice import</h3><p class="mu">${ok.length} items will be added to this purchase invoice (${newN} are new products). Check the list, then press Add.</p>
+  ${T(["Item","Barcode","Qty","Cost","Selling price","Status"],L.map(x=>`<tr class="${x.error?"hl":""}"><td>${esc(x.name)}${x.imeis.length?`<br><small class="mu">${x.imeis.length} IMEIs</small>`:""}</td><td>${esc(x.barcode)}</td><td>${x.qty}</td><td>${money(x.cost)}</td><td>${x.price?money(x.price):'<span class="mu">—</span>'}</td><td>${x.error?`<span class="low">${esc(x.error)}</span>`:x.pid?'<span class="okc">In inventory</span>':'<span class="tag warn">New product</span>'}</td></tr>`),"Nothing found.")}
+  ${newN?`<label>New products without a selling price: add this markup on the cost (%)</label><input id="impm" type="number" value="25">`:""}
+  <div class="row" style="margin-top:12px"><button data-a="mclose">Cancel</button><button class="pri" data-a="impgo">Add ${ok.length} items to the invoice</button></div>`,true)}
+ACT.impgo=async()=>{const mk=+($("#impm")?$("#impm").value:25)||0;let n=0;
+  for(const x of IMP.rows){if(x.error)continue;let pid=x.pid;
+    if(!pid){const price=x.price||Math.round(x.cost*(1+mk/100)*100)/100;
+      const r=await act("product_save",{name:x.name,category:x.category||"Accessories",barcode:x.barcode,cost:x.cost,price,qty:0,min_qty:2,track_imei:x.imeis.length>0});if(!r)return;pid=r.d}
+    PD.items.push({pid,name:x.name,qty:x.qty,cost:x.cost,imeis:x.imeis.join("\n")});n++}
+  closeModal();toast(n+" items added - check them, set Paid and Save invoice");viewPurchase()};
+ACT.pcancelp=()=>{PD=null;viewSup()};ACT.pdrm=b=>{PD.items.splice(+b.dataset.n,1);viewPurchase()};
+ACT.pdadd=async()=>{if(!PD.pid)return toast("Choose a product");const p=(await api("products",{})).find(x=>String(x.id)===String(PD.pid));
+  const ims=PD.imeis.split(/[\s,;]+/).filter(Boolean),qty=p.track_imei?ims.length:Math.floor(+PD.qty);
+  if(!qty||qty<1)return toast(p.track_imei?"Enter at least one IMEI":"Enter a quantity");
+  PD.items.push({pid:p.id,name:p.name,qty,cost:+PD.cost||0,imeis:p.track_imei?PD.imeis:""});PD.pid="";PD.qty="1";PD.cost="";PD.imeis="";viewPurchase()};
+ACT.pdnewp=async()=>{const d=await askForm("New product",[{k:"name",l:"Name"},{k:"category",l:"Category"},{k:"type",l:"Type",t:"select",o:PTYPES.slice(0,2)},{k:"price",l:"Selling price",t:"number"},{k:"cost",l:"Cost",t:"number"},{k:"barcode",l:"Barcode (optional)"}]);
+  if(!d)return;const r=await act("product_save",{...d,track_imei:d.type==="imei",qty:0,min_qty:2});if(r){PD.pid=String(r.d);PD.cost=d.cost;viewPurchase()}};
+ACT.pdsave=async()=>{const r=await act("purchase_create",{supplier_id:PD.sid,invoice_no:PD.inv,date:PD.date,items:PD.items.map(i=>({pid:i.pid,qty:i.qty,cost:i.cost,imeis:i.imeis})),paid:+PD.paid||0,method:PD.method},"Purchase saved, stock updated");if(r){PD=null;viewSup()}};
+
+/* ================= repairs ================= */
+async function viewRep(){
+  const[L,cs]=await Promise.all([api("repairs"),api("customers_min")]),st=["Received","In repair","Ready"];
+  $("#main").innerHTML=`<div class="card mb"><h3>New repair ticket</h3><div class="form">
+  <div><label>Customer</label><select id="rc"><option value="">Walk-in</option>${opts(cs.map(c=>[c.id,c.name]))}</select></div><div><label>Device</label><input id="rd"></div><div><label>IMEI / serial</label><input id="ri"></div>
+  <div><label>Issue</label><input id="rx"></div><div><label>Price</label><input id="rp" type="number" step="any"></div><div><label>Parts cost</label><input id="ro" type="number" step="any"></div>
+  <div><label>Warranty (days)</label><input id="rw" type="number" value="30"></div><div><button class="pri" data-a="rsave">Create ticket</button></div></div></div>
+  ${T(["Ticket","Customer / device","Issue","Price","Status",""],L.map(r=>`<tr><td>#${r.id}<br><small class="mu">${fd(r.date)}</small></td><td>${esc(r.customer)}<br>${esc(r.device)}${r.imei?`<br><small class="mu">${esc(r.imei)}</small>`:""}</td><td>${esc(r.issue)}</td><td>${money(r.price)}</td>
+  <td>${r.status==="Delivered"?tag("Delivered"):`<select data-c="rst" data-id="${r.id}">${opts(st,r.status)}</select>`}</td>
+  <td>${r.status==="Delivered"?`<button class="sm" data-a="rcpt" data-id="${r.sale_id}">Receipt</button>`:`<select id="rm${r.id}" style="width:auto">${opts(METHODS)}</select> <button class="sm pri" data-a="rdel" data-id="${r.id}">Deliver &amp; collect</button> <button class="sm" data-a="redit" data-id="${r.id}" data-j='${esc(JSON.stringify(r))}'>Edit</button> <button class="sm bad" data-a="rrm" data-id="${r.id}">Delete</button>`}</td></tr>`),"No tickets yet.")}`}
+ACT.rsave=async()=>{if(await act("repair_save",{customer_id:$("#rc").value,device:$("#rd").value,imei:$("#ri").value,issue:$("#rx").value,price:$("#rp").value,cost:$("#ro").value,warranty_days:$("#rw").value},"Ticket created"))viewRep()};
+CHG.rst=async el=>{await act("repair_status",{id:el.dataset.id,status:el.value})};
+ACT.rdel=async b=>{const r=await act("repair_deliver",{id:b.dataset.id,method:$("#rm"+b.dataset.id).value});if(r){await viewRep();showReceipt(r.d)}};
+ACT.rrm=b=>sure(b,async()=>{if(await act("repair_delete",{id:b.dataset.id}))viewRep()});
+ACT.redit=async b=>{const r=JSON.parse(b.dataset.j),d=await askForm("Edit ticket",[{k:"device",l:"Device"},{k:"imei",l:"IMEI / serial"},{k:"issue",l:"Issue"},{k:"price",l:"Price",t:"number"},{k:"cost",l:"Parts cost",t:"number"},{k:"warranty_days",l:"Warranty (days)",t:"number"}],r);
+  if(d&&await act("repair_save",{...d,id:r.id,customer_id:r.customer_id}))viewRep()};
+
+/* ================= expenses ================= */
+let EX={d1:"",d2:""};const ECATS=["Rent","Electricity","Generator","Salaries","Internet","Transport","Marketing","Maintenance","Other"];
+async function viewExp(){
+  EX.d1=EX.d1||mstart();EX.d2=EX.d2||todayS();const L=await api("expenses",EX);
+  $("#main").innerHTML=`<div class="card mb"><div class="row"><h3 style="margin:0">Add expense</h3><button class="sm" data-a="recopen">Recurring expenses</button></div><div class="form"><div><label>Date</label><input id="xd" type="date" value="${todayS()}"></div><div><label>Category</label><select id="xc">${opts(ECATS)}</select></div><div><label>Amount</label><input id="xa" type="number" step="any"></div><div><label>Note</label><input id="xn"></div><div><button class="pri" data-a="xadd">Add</button></div></div></div>
+  <div class="card mb"><div class="form"><div><label>From</label><input type="date" id="xf1" value="${EX.d1}"></div><div><label>To</label><input type="date" id="xf2" value="${EX.d2}"></div><div><button data-a="xfind">Show</button></div><div><label>Total</label><b class="big">${money(L.reduce((a,e)=>a+e.amount,0))}</b></div></div></div>
+  ${T(["Date","Category","Amount","Note",""],L.map(e=>`<tr><td>${e.date}</td><td>${esc(e.category)}</td><td>${money(e.amount)}</td><td>${esc(e.note)}</td><td><button class="sm" data-a="xedit" data-j='${esc(JSON.stringify(e))}'>Edit</button> <button class="sm bad" data-a="xdel" data-id="${e.id}">Delete</button></td></tr>`),"No expenses in this period.")}`}
+ACT.xadd=async()=>{if(await act("expense_save",{date:$("#xd").value,category:$("#xc").value,amount:$("#xa").value,note:$("#xn").value},"Expense added"))viewExp()};
+ACT.xfind=()=>{EX.d1=$("#xf1").value;EX.d2=$("#xf2").value;viewExp()};
+ACT.xdel=b=>sure(b,async()=>{if(await act("expense_delete",{id:b.dataset.id}))viewExp()});
+ACT.xedit=async b=>{const e=JSON.parse(b.dataset.j),d=await askForm("Edit expense",[{k:"date",l:"Date",t:"date"},{k:"category",l:"Category",t:"select",o:ECATS},{k:"amount",l:"Amount",t:"number"},{k:"note",l:"Note"}],e);if(d&&await act("expense_save",{...d,id:e.id}))viewExp()};
+
+/* ================= offers ================= */
+async function viewOff(){
+  const[L,ps]=await Promise.all([api("offers"),api("products",{})]);
+  $("#main").innerHTML=`<div class="card mb"><h3>New special offer</h3><div class="form"><div><label>Product</label><select id="op">${opts(ps.map(p=>[p.id,p.name+" — "+money(p.price)]))}</select></div><div><label>Offer price</label><input id="opr" type="number" step="any"></div>
+  <div><label>Starts</label><input id="os" type="date" value="${todayS()}"></div><div><label>Ends</label><input id="oe" type="date" value="${addDays(7)}"></div><div><label>Note</label><input id="on"></div><div><button class="pri" data-a="oadd">Add offer</button></div></div>
+  <p class="mu">During the dates the offer price is applied automatically at checkout.</p></div>
+  ${T(["Product","Regular","Offer","Off","Starts","Ends","Status",""],L.map(o=>`<tr><td>${esc(o.name)}<br><small class="mu">${esc(o.note)}</small></td><td>${money(o.regular)}</td><td><b>${money(o.price)}</b></td><td>${o.pct}%</td><td>${o.start}</td><td>${o.end}</td><td>${tag(o.status)}</td><td><button class="sm" data-a="oedit" data-j='${esc(JSON.stringify(o))}'>Edit</button> <button class="sm bad" data-a="odel" data-id="${o.id}">Delete</button></td></tr>`),"No offers yet.")}`}
+ACT.oadd=async()=>{if(await act("offer_save",{product_id:$("#op").value,price:$("#opr").value,start:$("#os").value,end:$("#oe").value,note:$("#on").value},"Offer added"))viewOff()};
+ACT.odel=b=>sure(b,async()=>{if(await act("offer_delete",{id:b.dataset.id}))viewOff()});
+ACT.oedit=async b=>{const o=JSON.parse(b.dataset.j),d=await askForm("Edit offer — "+o.name,[{k:"price",l:"Offer price",t:"number"},{k:"start",l:"Starts",t:"date"},{k:"end",l:"Ends",t:"date"},{k:"note",l:"Note"}],o);if(d&&await act("offer_save",{...d,id:o.id,product_id:o.product_id}))viewOff()};
+
+/* ================= reports ================= */
+let RP={name:"Profit & Loss",d1:"",d2:"",out:null,list:[]};
+async function viewRpt(){
+  RP.d1=RP.d1||mstart();RP.d2=RP.d2||todayS();if(!RP.list.length)RP.list=await api("report_list");
+  $("#main").innerHTML=`<div class="card mb"><div class="form"><div><label>Report</label><select id="rn">${opts(RP.list,RP.name)}</select></div><div><label>From</label><input type="date" id="rd1" value="${RP.d1}"></div><div><label>To</label><input type="date" id="rd2" value="${RP.d2}"></div>
+  <div><button class="pri" data-a="rrun">Show</button></div></div><div class="chips"><button data-a="rq" data-r="today">Today</button><button data-a="rq" data-r="month">This month</button><button data-a="rq" data-r="year">This year</button>
+  <span class="grow"></span><button data-a="rexp" data-f="xlsx">Export Excel</button><button data-a="rexp" data-f="csv">Export CSV</button><button data-a="rprint">Print</button><button data-a="rwar">WhatsApp</button></div></div><div id="rout"></div>`;await run()}
+async function run(){RP.name=$("#rn").value;RP.d1=$("#rd1").value;RP.d2=$("#rd2").value;const r=await act("report",{name:RP.name,d1:RP.d1,d2:RP.d2});if(!r)return;RP.out=r.d;
+  const f=v=>typeof v==="number"?(Number.isInteger(v)?v:v.toFixed(2)):esc(v);
+  $("#rout").innerHTML=T(r.d.cols.map(esc),r.d.rows.map(x=>`<tr${/PROFIT|Net profit/i.test(x[0])?' style="font-weight:700"':""}>${x.map((v,i)=>`<td>${i?'':''}${f(v)}</td>`).join("")}</tr>`),"No data for this period.")}
+ACT.rrun=run;
+ACT.rq=b=>{const r=b.dataset.r,t=todayS();$("#rd2").value=t;$("#rd1").value=r==="today"?t:r==="month"?t.slice(0,8)+"01":t.slice(0,5)+"01-01";run()};
+ACT.rexp=async b=>{await run();const r=await act("report_export",{name:RP.name,d1:RP.d1,d2:RP.d2,fmt:b.dataset.f});if(r)toast("Saved: "+r.d,6000)};
+ACT.rprint=async()=>{await run();if(!RP.out)return;const h=`<h3>${esc(SET.shop_name)} — ${esc(RP.name)}</h3><div class="mu">${RP.d1} → ${RP.d2}</div>`+$("#rout").innerHTML;openModal(h,true);setTimeout(()=>ACT.printl(),150)};
+ACT.rwar=async()=>{await run();if(!RP.out)return;waOpen("",`${SET.shop_name} - ${RP.name} (${RP.d1} to ${RP.d2})\n`+RP.out.rows.map(r=>r.join(" | ")).join("\n"))};
+
+/* ================= calculator ================= */
+const CALCK=["C","(",")","÷","7","8","9","×","4","5","6","−","1","2","3","+","0",".","⌫","="];
+function calcEval(s){s=String(s).replace(/÷/g,"/").replace(/×/g,"*").replace(/−/g,"-").replace(/,/g,"").trim();if(!s||!/^[0-9+\-*/().\s]+$/.test(s))return null;try{const v=Function('"use strict";return ('+s+')')();return Number.isFinite(v)?Math.round(v*1e8)/1e8:null}catch(e){return null}}
+ACT.calcopen=()=>{openModal(`<h3>Calculator</h3><input id="cd" autocomplete="off" inputmode="decimal" placeholder="0" style="font-size:calc(22px*var(--fs,1));text-align:right"><div id="cr" class="mu right" style="min-height:22px;margin:4px 0"></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">${CALCK.map(k=>`<button class="${k==="="?"pri":""}" data-a="ck" data-k="${k}" style="padding:12px 0;font-size:calc(17px*var(--fs,1))">${k}</button>`).join("")}</div>
+  <div class="row" style="margin-top:8px"><button class="sm" data-a="ck" data-k="usd">$ → L.L</button><button class="sm" data-a="ck" data-k="lbp">L.L → $</button><button class="sm" data-a="mclose">Close</button></div>`);
+  const d=$("#cd");d.focus();d.oninput=()=>{const v=calcEval(d.value);$("#cr").textContent=v==null||d.value.trim()===""?"":"= "+v.toLocaleString("en-US",{maximumFractionDigits:8})};
+  d.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();ACT.ck({dataset:{k:"="}})}}};
+ACT.ck=b=>{const d=$("#cd"),k=b.dataset.k;if(!d)return;
+  if(k==="C")d.value="";else if(k==="⌫")d.value=d.value.slice(0,-1);
+  else if(k==="="){const v=calcEval(d.value);if(v!=null)d.value=String(v)}
+  else if(k==="usd"||k==="lbp"){const v=calcEval(d.value);if(v==null)return;if(!rate())return toast("Set the exchange rate in Settings first");
+    $("#cr").textContent=k==="usd"?v.toLocaleString("en-US")+" $ = "+Math.round(v*rate()).toLocaleString("en-US")+" L.L":v.toLocaleString("en-US")+" L.L = "+(v/rate()).toFixed(4)+" $";
+    d.value=String(k==="usd"?Math.round(v*rate()):Math.round(v/rate()*1e4)/1e4);d.focus();return}
+  else d.value+=k;
+  d.focus();d.oninput&&d.oninput()};
+
+/* ================= logo, colour, wipe ================= */
+CHG.logo=async el=>{const f=el.files[0];if(!f)return;
+  const url=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});
+  const img=new Image();img.onerror=()=>toast("Could not read this image");
+  img.onload=async()=>{const m=Math.min(1,320/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(img.width*m));c.height=Math.max(1,Math.round(img.height*m));
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    if(await act("settings_save",{logo:c.toDataURL("image/png")},"Logo saved")){await boot();render()}};
+  img.src=url};
+ACT.logorm=async()=>{if(await act("settings_save",{logo:""},"Logo removed")){await boot();render()}};
+CHG.accent=async el=>{if(await act("settings_save",{accent:el.value},"Colour saved"))await boot()};
+ACT.accentrst=async()=>{if(await act("settings_save",{accent:""},"Colour reset")){await boot();render()}};
+ACT.wipe=async()=>{const f=[{k:"confirm",l:"Type DELETE to confirm",ph:"DELETE"}];if(ME.has_users)f.push({k:"pin",l:"Owner password",t:"password"});
+  const d=await askForm("Wipe ALL data",f,{},"Wipe everything");if(!d)return;
+  const r=await act("wipe_all",d);if(!r)return;
+  SL.cart=[];VD.cards=[];AL.sid="";AL.price="";await boot();toast("All data wiped. Backup saved: "+r.d,9000);go("home")};
+
+/* ================= Alfa credit: validity days + Alfa sales ================= */
+const payInfo=(price,cu,rec)=>{const r=parseFloat(rec);let paid=price;if(String(rec).trim()!==""&&!isNaN(r))paid=cu==="LBP"?r/(rate()||1):r;let debt=price-paid;if(debt<.004)debt=0;return{paid,debt,cu}};
+const pv=(a,b,t)=>`<div class="row"${t?' style="border-top:1px solid var(--bd);padding-top:6px"':""}><span class="mu">${a}</span><span>${t?`<b>${b}</b>`:b}</span></div>`;
+const payRows=(p,price)=>pv("Sale price",both(price))+(p.cu==="LBP"?pv("Customer pays",lbp(p.paid)+" = "+cur()+p.paid.toFixed(4)):"")+(p.debt>0?pv("Debt on customer",cur()+p.debt.toFixed(4)+" ("+lbp(p.debt)+")"):"");
+const optsCust=(list,sel)=>'<option value="">Walk-in</option>'+opts(list.map(c=>[c.id,c.name+(c.phone?" · "+c.phone:"")]),sel);
+const alfaKpis=st=>provSwitch()+`<div class="kpis"><div class="card"><span class="mu">Alfa stock</span><b>${money(st.amount)}</b></div>${ME.role==="owner"?`<div class="card"><span class="mu">Cost of 1$ Alfa</span><b>${cur()}${st.avg.toFixed(3)}</b></div>`:""}<div class="card"><span class="mu">Exchange rate</span><b>${rate()?"1$ = "+rate().toLocaleString("en-US")+" L.L":"not set"}</b></div></div>`;
+async function alfaLogHTML(){const L=await api("alfa_log");
+  return`<h3 style="margin-top:12px">Recent Alfa activity</h3>`+T(["Time","Type","Item","Alfa","Cost","Price","Profit",""],L.map(r=>`<tr><td>${ft(r.date)}</td><td>${esc(r.kind)}</td><td>${esc(r.item)}</td><td>${r.alfa>0?"+":""}${(+r.alfa).toFixed(2)}</td><td>${ME.role==="owner"?(+r.cost).toFixed(4):"—"}</td><td>${money(r.price)}</td><td class="${r.profit<0?"low":""}">${ME.role==="owner"&&r.profit?(+r.profit).toFixed(4):"—"}</td><td><button class="sm" data-a="rcpt" data-id="${r.sale_id}">Receipt</button></td></tr>`),"No Alfa activity yet.")}
+
+let VD={months:"1",cards:[],price:"",ret:"",cur:"USD",rec:"",cid:"",list:[],custs:[],st:{amount:0,cost:0,avg:0}};
+async function viewVal(){
+  AMODE="val";
+  const[list,custs,st,presets,types]=await Promise.all([api("validity_cards"),api("customers_min"),api("alfa_state"),api("validity_presets"),api("alfa_cards")]);
+  Object.assign(VD,{list,custs,st,presets,types});
+  VD.cards=VD.cards.map(k=>/^\d+$/.test(String(k))?"p:"+k:String(k)).filter(k=>k.startsWith("c:")||(k.startsWith("t:")&&types.find(t=>"t:"+t.id===k))||(k.startsWith("p:")&&list.find(p=>"p:"+p.id===k)));
+  $("#main").innerHTML=alfaKpis(st)+`<div class="card mb"><h3>VALIDITY DAYS</h3><div class="chips">${presets.map(p=>`<span><button class="pri sm" data-a="vdpre" data-id="${p.id}">${esc(p.name)}</button><button class="sm bad" data-a="vdpredel" data-id="${p.id}">×</button></span>`).join("")}<button class="sm" data-a="vdpresave">+ Save current as preset</button></div>
+  <div class="form"><div><label>Duration</label><select data-c="vd" data-k="months">${opts(Array.from({length:12},(_,i)=>[i+1,(i+1)+" MONTH"]),VD.months)}</select></div>
+  <div><label>Price taken (${esc(cur())})</label><input type="number" step="any" min="0" value="${esc(VD.price)}" data-i="vd" data-k="price" placeholder="2.77"></div>
+  <div><label>Alfa returned (${esc(cur())})</label><input type="number" step="any" min="0" value="${esc(VD.ret)}" data-i="vd" data-k="ret" placeholder="3"></div></div>
+  <label>Cards used — tap a card to add it (tap again for another one)</label>
+  ${(()=>{const own=(typeof ME==="undefined"||ME.role==="owner"),items=[...types.map(t=>({key:"t:"+t.id,name:t.name,cost:t.cost,note:"no stock",img:t.img})),...list.map(p=>({key:"p:"+p.id,name:p.name,cost:p.cost,note:"qty "+p.qty,img:p.img}))];
+    VD.cards.filter(k=>k.startsWith("c:")).forEach(k=>{if(!items.find(i=>i.key===k)){const[,cs,...nm]=k.split(":");items.push({key:k,name:nm.join(":")||"Card",cost:+cs,note:"one-off"})}});
+    const tiles=items.length?`<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(calc(260px*var(--box,1)),1fr));gap:10px;margin:6px 0 10px">${items.map(it=>{const n=VD.cards.filter(k=>k===it.key).length;
+      return`<div class="card" data-a="vdtile" data-key="${esc(it.key)}" style="cursor:pointer;padding:12px;${n?"border-color:var(--ac);outline:2px solid var(--ac);outline-offset:-1px":""}"><div class="row" style="margin:0"><span style="display:flex;align-items:center;gap:8px">${it.img?`<img class="th" style="width:calc(36px*var(--pic,1));height:calc(36px*var(--pic,1))" alt="" src="${imgUrl(it.img)}">`:""}<b>${esc(it.name)}</b></span>${n?`<span class="tag ok">× ${n}</span>`:""}</div><div class="mu">${own?"cost "+money(it.cost)+" · ":""}${it.note}</div>${n?`<div style="margin-top:6px"><button class="sm bad" data-a="vdminus" data-key="${esc(it.key)}">− Remove one</button></div>`:""}</div>`}).join("")}</div>`
+      :`<p class="mu">${own?"No cards yet. Press “Manage card types” and add the cards you buy (for example Card 7.5 with its cost).":"No cards yet. Ask the owner to add the card types."}</p>`;
+    return tiles+(own?`<div class="chips"><button class="sm" data-a="ctmanage">Manage card types</button><button class="sm" data-a="ctone">+ One-off card (type its cost)</button></div>`:"")})()}
+  <div class="form" style="margin-top:8px"><div><label>Received in</label><select data-c="vd" data-k="cur">${opts(["USD","LBP"],VD.cur)}</select></div>
+  <div><label>Amount received (${VD.cur==="LBP"?"L.L":esc(cur())}) — blank = paid in full</label><input type="number" step="any" min="0" value="${esc(VD.rec)}" data-i="vd" data-k="rec"></div>
+  <div><label>Customer (needed if there is a debt)</label><select data-c="vd" data-k="cid">${optsCust(custs,VD.cid)}</select></div></div>
+  <div class="card" id="vprev" style="margin-top:8px"></div>
+  <div class="row"><span class="mu">Cost uses the cost of the cards you chose.</span><button class="pri" data-a="vdsave">Save</button></div></div><div id="vlog"></div>`;
+  vdPrev();$("#vlog").innerHTML=await alfaLogHTML()}
+function vdPrev(){const e=$("#vprev");if(!e)return;const price=parseFloat(VD.price),ret=parseFloat(VD.ret);
+  if(isNaN(price)||!(ret>0)){e.innerHTML='<span class="mu">Enter the price taken and the Alfa returned.</span>';return}
+  const cc=VD.cards.reduce((a,k)=>a+cardCost(k),0),cr=cc-price,st=VD.st,ns=st.amount+ret,nc=st.cost+cr,p=payInfo(price,VD.cur,VD.rec);
+  if(ME.role!=="owner"){e.innerHTML=payRows(p,price);return}e.innerHTML=pv("Cards cost",money(cc))+payRows(p,price)+pv("Cost of the returned Alfa",cur()+cr.toFixed(4))+pv("Cost of 1$ in this sale",cur()+(cr/ret).toFixed(3))+pv("New Alfa stock / cost of 1$",money(ns)+" / "+cur()+(nc/ns).toFixed(3),1)}
+INP.vd=el=>{VD[el.dataset.k]=el.value;vdPrev()};
+CHG.vd=el=>{VD[el.dataset.k]=el.value;viewVal()};
+CHG.vdc=el=>{VD.cards[+el.dataset.n]=el.value;vdPrev()};
+const cardCost=k=>{k=String(k);if(k.startsWith("t:")){const t=VD.types.find(t=>"t:"+t.id===k);return t?t.cost:0}if(k.startsWith("p:")){const p=VD.list.find(p=>"p:"+p.id===k);return p?p.cost:0}if(k.startsWith("c:"))return +k.split(":")[1]||0;return 0};
+ACT.vdtile=b=>{VD.cards.push(String(b.dataset.key));viewVal()};
+ACT.vdminus=b=>{const i=VD.cards.map(String).lastIndexOf(String(b.dataset.key));if(i>=0)VD.cards.splice(i,1);viewVal()};
+ACT.ctone=async()=>{const f=await askForm("One-off card",[{k:"name",l:"Name (e.g. Card 7.5)"},{k:"cost",l:"What you paid for it ($)",t:"number"}]);if(f&&+f.cost>=0&&f.cost!==""){VD.cards.push("c:"+(+f.cost)+":"+(f.name||"Card").replace(/:/g,"-"));viewVal()}};
+ACT.ctmanage=async()=>{const L=await api("alfa_cards");openModal(`<h3>Card types</h3><p class="mu">The cards you buy from an app or an agent when you need them. Cost = what you pay for one card. No stock is kept.</p>${T(["Card","Cost","Selling price",""],L.map(t=>`<tr><td>${t.img?`<img class="th" style="width:calc(30px*var(--pic,1));height:calc(30px*var(--pic,1));vertical-align:middle;margin-right:8px" alt="" src="${imgUrl(t.img)}">`:""}${esc(t.name)}</td><td>${money(t.cost)}</td><td>${t.price?money(t.price):"—"}</td><td><button class="sm" data-a="ctedit" data-j='${esc(JSON.stringify(t))}'>Edit</button> <button class="sm bad" data-a="ctdel" data-id="${t.id}">Delete</button></td></tr>`),"No card types yet.")}<div class="row"><button class="pri" data-a="ctadd">+ Add card type</button><button data-a="mclose">Close</button></div>`)};
+ACT.ctadd=async()=>{const f=await askForm("New card type",[{k:"name",l:"Name (e.g. Card 7.5)"},{k:"cost",l:"Cost - what you pay for one card ($)",t:"number"},{k:"price",l:"Selling price to customers ($, optional)",t:"number"}]);if(f&&await act("alfa_card_save",f,"Saved")){await viewVal();ACT.ctmanage()}};
+ACT.ctedit=async b=>{const t=JSON.parse(b.dataset.j),f=await askForm("Edit card type",[{k:"name",l:"Name"},{k:"cost",l:"Cost ($)",t:"number"},{k:"price",l:"Selling price to customers ($, optional)",t:"number"}],t);if(f&&await act("alfa_card_save",{...f,id:t.id},"Saved")){await viewVal();ACT.ctmanage()}};
+ACT.ctdel=b=>sure(b,async()=>{if(await act("alfa_card_delete",{id:b.dataset.id},"Deleted")){VD.cards=VD.cards.filter(k=>k!=="t:"+b.dataset.id);await viewVal();ACT.ctmanage()}});
+ACT.vdadd=()=>{VD.cards.push(VD.cards[VD.cards.length-1]||"");viewVal()};
+ACT.vdrm=b=>{VD.cards.splice(+b.dataset.n,1);viewVal()};
+ACT.vdsave=async()=>{const r=await act("validity_sale",{months:VD.months,cards:VD.cards,ret:VD.ret,price:VD.price,cur:VD.cur,received:VD.rec,customer_id:VD.cid||null});
+  if(!r)return;Object.assign(VD,{price:"",ret:"",rec:"",cards:[]});toast("Saved — Alfa added to stock");viewVal()};
+
+let AL={type:"svc",sid:"",amt:"1",price:"",cur:"USD",rec:"",cid:"",svcs:[],custs:[],st:{amount:0,cost:0,avg:0}};
+const AMTS=["0.5","1","1.5","2","2.5","3"];
+const svcTable=svcs=>T(["Service","Alfa used ($)","Default price",""],svcs.map(s=>`<tr><td>${s.img?`<img class="th" style="width:calc(30px*var(--pic,1));height:calc(30px*var(--pic,1));vertical-align:middle;margin-right:8px" alt="" src="${imgUrl(s.img)}">`:""}${esc(s.name)}</td><td>${s.alfa}</td><td>${money(s.price)}${s.fav?" ★":""}</td><td><button class="sm" data-a="alsedit" data-j='${esc(JSON.stringify(s))}'>Edit</button> <button class="sm bad" data-a="alsdel" data-id="${s.id}">Delete</button></td></tr>`),"No services yet — add one below.");
+async function viewAlfa(){
+  AMODE=AL.type;
+  const[svcs,custs,st,adj,cards]=await Promise.all([api("alfa_services"),api("customers_min"),api("alfa_state"),ME.role==="owner"?api("alfa_adjustments"):Promise.resolve([]),api("alfa_cards")]);
+  Object.assign(AL,{svcs,custs,st,cards});
+  if(!cards.find(c=>String(c.id)===String(AL.card)))AL.card=cards[0]?String(cards[0].id):"";
+  if(AL.type==="card"&&AL.price===""&&AL.card)AL.price=String((cards.find(c=>String(c.id)===AL.card)||{}).price||"");
+  if(!svcs.find(s=>String(s.id)===String(AL.sid)))AL.sid=svcs[0]?String(svcs[0].id):"";
+  if(AL.type==="svc"&&AL.price===""&&AL.sid)AL.price=String(svcs.find(s=>String(s.id)===AL.sid).price);
+  $("#main").innerHTML=alfaKpis(st)+`<div class="card mb"><div class="row"><h3 style="margin:0">Sell Alfa / services</h3>${ME.role==="owner"?`<span><button class="sm" data-a="alset">Set stock exactly</button> <button class="sm" data-a="aladj">Adjust Alfa stock</button></span>`:""}</div>
+  <div class="form">${AL.type==="svc"?`<div><label>Service</label><select data-c="al" data-k="sid">${opts(svcs.map(s=>[s.id,`${s.name} (${s.alfa}$ Alfa)`]),AL.sid)}</select></div>`:AL.type==="card"?`<div><label>Card (add card types in Validity days > Manage card types)</label><select data-c="al" data-k="card">${opts(cards.map(c=>[c.id,c.name+(c.price?" — "+money(c.price):"")]),AL.card)}</select></div>`:`<div><label>Amount sent ($)</label><select data-c="al" data-k="amt">${opts(AMTS,AL.amt)}</select></div>`}
+  <div><label>Sale price (${esc(cur())})</label><input type="number" step="any" min="0" value="${esc(AL.price)}" data-i="al" data-k="price"></div></div>
+  <div class="form" style="margin-top:8px"><div><label>Received in</label><select data-c="al" data-k="cur">${opts(["USD","LBP"],AL.cur)}</select></div>
+  <div><label>Amount received (${AL.cur==="LBP"?"L.L":esc(cur())}) — blank = paid in full</label><input type="number" step="any" min="0" value="${esc(AL.rec)}" data-i="al" data-k="rec"></div>
+  <div><label>Customer (needed if there is a debt)</label><select data-c="al" data-k="cid">${optsCust(custs,AL.cid)}</select></div></div>
+  <div class="card" id="aprev" style="margin-top:8px"></div>
+  <div class="row"><span class="mu">The Alfa is taken from stock at the current cost per 1$, and the profit is added to your sales profit.</span><button class="pri" data-a="alsell">Save sale</button></div></div>
+  <div class="card mb"><div class="row"><h3 style="margin:0">Services</h3><button class="sm pri" data-a="alsadd">+ Add service</button></div>${svcTable(svcs)}</div>${ME.role==="owner"?adjTable(adj):""}<div id="alog"></div>`;
+  alPrev();$("#alog").innerHTML=await alfaLogHTML()}
+function alVals(){const price=parseFloat(AL.price);let amt,fee=0,name;
+  if(AL.type==="card"){const c=(AL.cards||[]).find(c=>String(c.id)===String(AL.card));if(!c||isNaN(price))return null;return{name:"Card "+c.name,amt:0,fee:0,ded:0,price,cost:c.cost,card:true}}
+  if(AL.type==="svc"){const s=AL.svcs.find(s=>String(s.id)===String(AL.sid));if(!s)return null;amt=s.alfa;name=s.name}
+  else{amt=parseFloat(AL.amt);fee=+SET.alfa_fee||0;name="Alfa dollars "+amt+"$"}
+  if(isNaN(price)||!(amt>0))return null;const ded=amt+fee;return{name,amt,fee,ded,price,cost:ded*AL.st.avg}}
+function alPrev(){const e=$("#aprev");if(!e)return;const v=alVals();
+  if(!v){e.innerHTML='<span class="mu">Choose an item and enter the sale price.</span>';return}
+  const p=payInfo(v.price,AL.cur,AL.rec),pr=v.price-v.cost;
+  if(ME.role!=="owner"){e.innerHTML=(v.card?"":pv("Alfa taken from stock",v.ded.toFixed(2)+"$"))+payRows(p,v.price);return}e.innerHTML=(v.fee>0?pv("Amount sent",v.amt.toFixed(2)+"$")+pv("Message fee",v.fee.toFixed(2)+"$"):"")+(v.card?"":pv("Alfa taken from stock",v.ded.toFixed(2)+"$"))+pv(v.card?"Card cost":"Cost ("+v.ded.toFixed(2)+" × "+AL.st.avg.toFixed(3)+")",cur()+v.cost.toFixed(4))+payRows(p,v.price)+pv("Profit added",`<span class="${pr<0?"low":"okc"}">${pr<0?"-":""}${cur()}${Math.abs(pr).toFixed(4)}</span>`,1)}
+INP.al=el=>{AL[el.dataset.k]=el.value;alPrev()};
+CHG.al=el=>{AL[el.dataset.k]=el.value;if(el.dataset.k==="sid"||el.dataset.k==="type"||el.dataset.k==="card")AL.price="";viewAlfa()};
+ACT.alsell=async()=>{const r=await act("alfa_sell",{type:AL.type,service_id:AL.sid,card_id:AL.card,amount:AL.amt,price:AL.price,cur:AL.cur,received:AL.rec,customer_id:AL.cid||null});
+  if(!r)return;AL.rec="";if(AL.type==="usd")AL.price="";else AL.price="";toast("Saved");viewAlfa()};
+ACT.alsadd=async()=>{const d=await askForm("New service",[{k:"name",l:"Name"},{k:"alfa",l:"Alfa dollars it uses ($)",t:"number"},{k:"price",l:"Default sale price",t:"number"},{k:"fav",l:"Show as a Recharge Card in Inventory and on the Sell screen",t:"select",o:[["0","No"],["1","Yes"]]}]);
+  if(d&&await act("alfa_service_save",d,"Service added"))viewAlfa()};
+ACT.alsedit=async b=>{const s=JSON.parse(b.dataset.j),d=await askForm("Edit service",[{k:"name",l:"Name"},{k:"alfa",l:"Alfa dollars it uses ($)",t:"number"},{k:"price",l:"Default sale price",t:"number"},{k:"fav",l:"Show as a Recharge Card in Inventory and on the Sell screen",t:"select",o:[["0","No"],["1","Yes"]]}],s);
+  if(d&&await act("alfa_service_save",{...d,id:s.id},"Saved")){AL.price="";viewAlfa()}};
+ACT.alsdel=b=>sure(b,async()=>{if(await act("alfa_service_delete",{id:b.dataset.id})){AL.sid="";AL.price="";viewAlfa()}});
+const adjTable=L=>`<div class="card mb"><h3>Stock adjustments</h3>${T(["Date","Alfa","Cost","Note",""],L.map(r=>`<tr><td>${ft(r.date)}</td><td>${r.amount>0?"+":""}${(+r.amount).toFixed(2)}</td><td>${ME.role==="owner"?(+r.cost).toFixed(4):"—"}</td><td>${esc(r.note)}</td><td>${r.kind==="reset"?"":`<button class="sm bad" data-a="aladel" data-id="${r.id}">Delete</button>`}</td></tr>`),"No manual adjustments.")}</div>`;
+ACT.aladel=b=>sure(b,async()=>{if(await act("alfa_adjust_delete",{id:b.dataset.id},"Adjustment removed")){await viewAlfa()}});
+ACT.alset=async()=>{const d=await askForm("Set Alfa stock exactly",[{k:"amount",l:"Alfa stock now ($)",t:"number"},{k:"avg",l:"Cost of 1$ Alfa ($)",t:"number"},{k:"note",l:"Note"}],{amount:AL.st.amount,avg:+AL.st.avg.toFixed(4),note:"Corrected"});
+  if(d&&await act("alfa_set",d,"Alfa stock set")){await viewAlfa();if(tab==="val")viewVal()}};
+ACT.aladj=async()=>{const d=await askForm("Adjust Alfa stock",[{k:"amount",l:"Alfa dollars to add (negative to remove)",t:"number"},{k:"cost",l:"Total cost of that Alfa ($)",t:"number"},{k:"note",l:"Note"}],{note:"Opening balance"});
+  if(d&&await act("alfa_adjust",d,"Alfa stock updated")){await viewAlfa();if(tab==="val")viewVal()}};
+
+/* ================= V5: roles, chart, day summary, stock count, labels, presets, extras ================= */
+const OWN=new Set(["dash","inv","sup","exp","off","rpt","set"]);
+const visTabs=()=>TABS.filter(t=>ME.role==="owner"||!OWN.has(t[0]));
+
+function weekChart(w){const mx=Math.max(1,...w.map(r=>Math.max(r.rev,r.profit||0))),W=700,H=140,bw=24,gap=(W-7*2*bw)/8;let g="",x=gap;
+  w.forEach(r=>{const hr=r.rev/mx*H,hp=(r.profit||0)/mx*H;
+    g+=`<rect x="${x}" y="${H-hr}" width="${bw}" height="${hr}" rx="3" fill="var(--ac)"/>`;
+    if(r.profit!=null)g+=`<rect x="${x+bw}" y="${H-Math.max(0,hp)}" width="${bw}" height="${Math.max(0,hp)}" rx="3" fill="var(--ok)"/>`;
+    g+=`<text x="${x+bw}" y="${H+15}" text-anchor="middle" font-size="11" fill="var(--mu)">${r.date.slice(5)}</text><text x="${x+bw}" y="${H-Math.max(hr,hp)-4}" text-anchor="middle" font-size="10" fill="var(--mu)">${Math.round(r.rev)}</text>`;x+=2*bw+gap});
+  return`<div class="card mb"><h3>Last 7 days</h3><svg viewBox="0 0 ${W} ${H+22}" style="width:100%;height:auto">${g}</svg><div class="mu">Blue = sales${w[0].profit==null?"":" · Green = profit"}</div></div>`}
+
+/* ---- day summary */
+let DY={d:""};
+const dayText=s=>`${SET.shop_name} - ${s.date}\nSales: ${s.sales_count}   Revenue: ${money(s.revenue)}${s.profit==null?"":"   Profit: "+money(s.profit)}\nCash: ${money(s.cash_usd)} + ${Math.round(s.cash_lbp).toLocaleString("en-US")} L.L   Card: ${money(s.card)}   Transfer: ${money(s.transfer)}\nCash in/out: +${money(s.in_usd)} / -${money(s.out_usd)}  ·  +${Math.round(s.in_lbp).toLocaleString("en-US")} / -${Math.round(s.out_lbp).toLocaleString("en-US")} L.L\nValidity days sold: ${s.validity}   Alfa sales: ${s.alfa_sales}\nAlfa stock: ${money(s.alfa.amount)}\nNew debts: ${money(s.new_debt)}   Debts collected: ${money(s.collected)}   All debts: ${money(s.debts)}\nLow stock items: ${s.low_count}`;
+async function viewDay(){DY.d=DY.d||todayS();const s=await api("day_summary",{date:DY.d}),ow=ME.role==="owner";DY.s=s;
+  const kp=(l,v)=>`<div class="card"><span class="mu">${l}</span><b>${v}</b></div>`,L=n=>Math.round(n).toLocaleString("en-US")+" L.L";
+  $("#main").innerHTML=`<div class="card mb"><div class="form"><div><label>Date</label><input type="date" id="dyd" value="${DY.d}"></div><div><button data-a="dyshow">Show</button> <button data-a="dyprint">Print</button> <button data-a="dywa">WhatsApp to me</button> ${ow?'<button data-a="dymail">Email me</button>':""}</div></div></div>
+  <div class="kpis">${kp("Sales",s.sales_count)}${kp("Revenue",money(s.revenue))}${ow?kp("Profit",money(s.profit)):""}${ow?kp("Expenses",money(s.expenses)):""}${kp("Cash (USD)",money(s.cash_usd))}${kp("Cash (L.L)",L(s.cash_lbp))}${kp("Card",money(s.card))}${kp("Transfer",money(s.transfer))}</div>
+  <div class="kpis">${kp("Cash in",money(s.in_usd)+" · "+L(s.in_lbp))}${kp("Cash out",money(s.out_usd)+" · "+L(s.out_lbp))}${kp("New debts",money(s.new_debt))}${kp("Debts collected",money(s.collected))}${kp("All customer debts",money(s.debts))}${kp("Low stock items",s.low_count)}</div>
+  <div class="kpis">${kp("Validity days sold",s.validity)}${kp("Alfa sales",s.alfa_sales)}${ow?kp("Alfa profit",money(s.alfa_profit)):""}${kp("Alfa stock",money(s.alfa.amount))}${s.touch&&(s.touch.amount>0||s.touch_sales||s.touch_validity)?kp("Touch stock",money(s.touch.amount))+kp("Touch sales / days",s.touch_sales+" / "+s.touch_validity)+(ow?kp("Touch profit",money(s.touch_profit)):""):""}</div>`}
+ACT.dyshow=()=>{DY.d=$("#dyd").value||todayS();viewDay()};
+ACT.dywa=()=>waOpen(SET.owner_phone,dayText(DY.s));
+ACT.dymail=async()=>{toast("Sending…",15000);const r=await act("summary_send",{date:DY.d});if(r)toast(r.d,5000)};
+ACT.dyprint=()=>openModal(`<h3>${esc(SET.shop_name)}</h3><pre style="white-space:pre-wrap;font:inherit">${esc(dayText(DY.s))}</pre><div class="row"><button data-a="printl">Print</button><button class="pri" data-a="mclose">Close</button></div>`);
+
+/* ---- stock count */
+let SC={c:{},im:{},prod:{}};
+async function viewCount(){
+  $("#main").innerHTML=`<div class="card mb"><h3>Stock count</h3><p class="mu">Scan each item on the shelf (every scan adds 1), or type the counted number. Phones are checked by IMEI. "Apply" sets the system quantities to what you counted (phones are only reported, never changed).</p>
+  <div class="sc"><input id="scn" placeholder="Scan barcode or IMEI here, then Enter"><button data-a="screset">Start over</button></div><div id="scout"></div></div>`;$("#scn").focus();drawCount()}
+document.addEventListener("keydown",async e=>{if(e.target.id!=="scn"||e.key!=="Enter")return;const code=e.target.value.trim();e.target.value="";if(!code)return;
+  const r=await act("scan",{code});if(!r)return;if(!r.d)return toast("Unknown barcode / IMEI: "+code);const p=r.d.product;SC.prod[p.id]=p;
+  if(p.track_imei){if(!r.d.imei)return toast("This is a phone - scan its IMEI");(SC.im[p.id]=SC.im[p.id]||{})[r.d.imei]=1}else SC.c[p.id]=(SC.c[p.id]||0)+1;drawCount();$("#scn").focus()});
+function drawCount(){const o=$("#scout");if(!o)return;const ids=Object.keys(SC.prod);
+  o.innerHTML=T(["Product","System","Counted","Difference",""],ids.map(id=>{const p=SC.prod[id],im=p.track_imei,cnt=im?Object.keys(SC.im[id]||{}).length:(SC.c[id]||0),d=cnt-p.qty;
+    return`<tr><td>${esc(p.name)}${im?' <span class="tag">IMEI</span>':""}</td><td>${p.qty}</td><td>${im?cnt:`<input type="number" style="width:90px" value="${cnt}" data-i="scc" data-id="${id}">`}</td><td class="${d?"low":"okc"}">${d>0?"+":""}${d}</td><td>${im?`<button class="sm" data-a="scmiss" data-id="${id}">Missing IMEIs</button>`:""}</td></tr>`}),"Nothing scanned yet.")+
+  `<div class="row" style="margin-top:8px"><span class="mu">${ids.length} products scanned</span><button class="pri" data-a="scapply">Apply counted quantities</button></div>`}
+INP.scc=el=>{SC.c[el.dataset.id]=Math.max(0,Math.floor(+el.value||0));const row=el.closest("tr"),p=SC.prod[el.dataset.id],d=SC.c[el.dataset.id]-p.qty;row.children[3].textContent=(d>0?"+":"")+d;row.children[3].className=d?"low":"okc"};
+ACT.screset=()=>{SC={c:{},im:{},prod:{}};drawCount()};
+ACT.scmiss=async b=>{const id=b.dataset.id,L=(await api("imeis",{product_id:id})).filter(i=>i.status==="in_stock"&&!(SC.im[id]||{})[i.imei]);
+  openModal(`<h3>Not scanned — ${esc(SC.prod[id].name)}</h3>${T(["IMEI"],L.map(i=>`<tr><td>${esc(i.imei)}</td></tr>`),"All phones were found.")}<div class="row"><span></span><button data-a="mclose">Close</button></div>`)};
+ACT.scapply=b=>sure(b,async()=>{const items=Object.keys(SC.prod).filter(id=>!SC.prod[id].track_imei).map(id=>({pid:id,counted:SC.c[id]||0}));
+  if(!items.length)return toast("Nothing to apply");const r=await act("stock_count_apply",{items});if(r){toast(r.d+" products updated");SC={c:{},im:{},prod:{}};drawCount()}});
+
+/* ---- barcode labels (Code 39) */
+const C39={"0":"101001101101","1":"110100101011","2":"101100101011","3":"110110010101","4":"101001101011","5":"110100110101","6":"101100110101","7":"101001011011","8":"110100101101","9":"101100101101","A":"110101001011","B":"101101001011","C":"110110100101","D":"101011001011","E":"110101100101","F":"101101100101","G":"101010011011","H":"110101001101","I":"101101001101","J":"101011001101","K":"110101010011","L":"101101010011","M":"110110101001","N":"101011010011","O":"110101101001","P":"101101101001","Q":"101010110011","R":"110101011001","S":"101101011001","T":"101011011001","U":"110010101011","V":"100110101011","W":"110011010101","X":"100101101011","Y":"110010110101","Z":"100110110101","-":"100101011011",".":"110010101101"," ":"100110101101","*":"100101101101"};
+function code39(t){const s="*"+String(t).toUpperCase().replace(/[^0-9A-Z\-. ]/g,"")+"*";let x=0,b="";for(const ch of s){const p=C39[ch];if(!p)continue;for(let i=0;i<12;i++){if(p[i]==="1")b+=`<rect x="${x}" y="0" width="1" height="40"/>`;x++}x++}
+  return`<svg viewBox="0 0 ${x} 40" preserveAspectRatio="none" style="width:100%;height:38px;background:#fff" fill="#000">${b}</svg>`}
+async function labelSheet(list){if(!list.length)return toast("Nothing to print");const d=await askForm("Print labels",[{k:"copies",l:"Copies of each label",t:"number"}],{copies:1});if(!d)return;const n=Math.max(1,Math.min(50,Math.floor(+d.copies||1)));
+  const cells=list.flatMap(p=>Array(n).fill(0).map(()=>`<div style="border:1px dashed #999;border-radius:6px;padding:6px;text-align:center;break-inside:avoid;color:#000;background:#fff"><div style="font-size:calc(12px*var(--fs,1));font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${esc(p.name)}</div>${code39(p.barcode)}<div style="font-size:calc(11px*var(--fs,1))">${esc(p.barcode)}</div><b>${money(p.price)}</b></div>`)).join("");
+  openModal(`<h3>Labels</h3><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${cells}</div><div class="row"><button class="pri" data-a="printl">Print</button><button data-a="mclose">Close</button></div>`,true)}
+ACT.plabel=async b=>{const p=(await api("products",{})).find(p=>String(p.id)===b.dataset.id);if(p)labelSheet([p])};
+ACT.plabels=async()=>{const l=await api("products",{q:IV.q,cat:IV.cat,low:IV.low});labelSheet(l.filter(p=>!p.service&&p.barcode))};
+
+/* ---- quick Alfa buttons, presets, statements, recurring */
+ACT.qalfa=async b=>{const s=SL.favs.find(x=>String(x.id)===b.dataset.id);
+  const d=await askForm(s.name,[{k:"price",l:"Sale price ($)",t:"number"},{k:"cur",l:"Customer pays in",t:"select",o:["USD","LBP"]},{k:"received",l:"Amount received (blank = paid in full)",t:"number"},{k:"customer_id",l:"Customer (needed if there is a debt)",t:"select",o:[["","Walk-in"],...SL.custs.map(c=>[c.id,c.name])]}],{price:s.price,cur:"USD"},"Sell");
+  if(!d)return;const r=await act("alfa_sell",{type:"svc",service_id:s.id,price:d.price,cur:d.cur,received:d.received,customer_id:d.customer_id||null});if(r){toast("Alfa sale saved");showReceipt(r.d)}};
+ACT.qcard=async b=>{const c=SL.cards.find(x=>String(x.id)===b.dataset.id);
+  const f=await askForm("Sell "+c.name,[{k:"price",l:"Sale price ($)",t:"number"},{k:"cur",l:"Customer pays in",t:"select",o:["USD","LBP"]},{k:"received",l:"Amount received (blank = paid in full)",t:"number"},{k:"customer_id",l:"Customer (needed if there is a debt)",t:"select",o:[["","Walk-in"],...SL.custs.map(x=>[x.id,x.name])]}],{price:c.price,cur:"USD"},"Sell");
+  if(!f)return;const r=await act("alfa_sell",{type:"card",card_id:c.id,price:f.price,cur:f.cur,received:f.received,customer_id:f.customer_id||null});if(r){toast("Card sold");showReceipt(r.d)}};
+ACT.vdpre=b=>{const p=VD.presets.find(x=>String(x.id)===b.dataset.id);if(!p)return;Object.assign(VD,{months:String(p.months),cards:JSON.parse(p.cards).map(String).map(k=>/^\d+$/.test(k)?"p:"+k:k),ret:String(p.ret),price:String(p.price),rec:""});viewVal()};
+ACT.vdpredel=b=>sure(b,async()=>{if(await act("preset_delete",{id:b.dataset.id}))viewVal()});
+ACT.vdpresave=async()=>{const d=await askForm("Save preset",[{k:"name",l:"Name (e.g. 1 MONTH - card 4.5)"}]);if(d&&await act("preset_save",{name:d.name,months:VD.months,cards:VD.cards,ret:VD.ret,price:VD.price},"Preset saved"))viewVal()};
+ACT.cwa=()=>{if(!PROFR)return;const c=PROFR.customer,u=PROFR.sales.filter(s=>s.balance>.004);
+  waOpen(c.phone,`${SET.shop_name} - account statement for ${c.name}\n`+(u.length?u.map(s=>`Invoice #${s.id} (${fd(s.date)}): ${money(s.balance)} due`).join("\n")+`\nTotal due: ${money(c.balance)}${rate()?" ("+lbp(c.balance)+")":""}`:"You have no outstanding balance.")+`\nThank you!`)};
+ACT.recopen=async()=>{const L=await api("recurring_list");openModal(`<h3>Recurring expenses</h3><p class="mu">Added automatically once a month on the chosen day (when you open the app).</p>${T(["Category","Amount","Day","Note",""],L.map(r=>`<tr><td>${esc(r.category)}</td><td>${money(r.amount)}</td><td>${r.day}</td><td>${esc(r.note)}</td><td><button class="sm bad" data-a="recdel" data-id="${r.id}">Delete</button></td></tr>`),"None yet.")}<div class="row"><button class="pri" data-a="recadd">+ Add recurring expense</button><button data-a="mclose">Close</button></div>`,true)};
+ACT.recadd=async()=>{const d=await askForm("New recurring expense",[{k:"category",l:"Category",t:"select",o:ECATS},{k:"amount",l:"Amount",t:"number"},{k:"day",l:"Day of the month (1-28)",t:"number"},{k:"note",l:"Note"}],{day:1});if(d&&await act("recurring_save",d,"Saved"))ACT.recopen()};
+ACT.recdel=b=>sure(b,async()=>{if(await act("recurring_delete",{id:b.dataset.id}))ACT.recopen()});
+
+/* ---- settings extras: users, rate history, activity log */
+async function drawSetExtras(){
+  const[us,rh,au,li]=await Promise.all([api("users"),api("rate_history"),api("audit_list",{limit:150}),api("lan_info")]);
+  $("#usersbox").innerHTML=(us.length?"":'<p class="mu">No users yet: the app opens without a password. Create the Owner to turn on the sign-in screen.</p>')+T(["User","Role",""],us.map(u=>`<tr><td>${esc(u.name)} <small class="mu">· ${esc(u.username)}</small></td><td>${u.role==="owner"?"Owner":"Cashier"}</td><td><button class="sm" data-a="uedit" data-j='${esc(JSON.stringify(u))}'>Edit / password</button> <button class="sm bad" data-a="udel" data-id="${u.id}">Delete</button></td></tr>`),"")+`<div class="row"><span class="mu">Cashiers cannot see costs or profit; risky actions ask for the owner password.</span><span><button class="sm" data-a="recnew">New recovery code</button> <button class="sm pri" data-a="uadd">+ Add user</button></span></div>`;
+  $("#lanbox").innerHTML=lanHTML(li);$("#ratebox").innerHTML=T(["Date","Rate (L.L per 1$)","By"],rh.map(r=>`<tr><td>${ft(r.date)}</td><td>${Math.round(r.rate).toLocaleString("en-US")}</td><td>${esc(r.user)}</td></tr>`),"No history yet.");
+  $("#auditbox").innerHTML=`<div style="max-height:320px;overflow:auto">`+T(["Time","User","Action","Details"],au.map(r=>`<tr><td>${ft(r.date)}</td><td>${esc(r.user)}</td><td>${esc(r.action)}</td><td><small class="mu">${esc(r.detail)}</small></td></tr>`),"Nothing yet.")+`</div>`}
+ACT.uadd=async()=>{const n=(await api("users")).length,d=await askForm("New user",[{k:"name",l:"Full name"},{k:"username",l:"Username (used to sign in)"},{k:"role",l:"Role",t:"select",o:[["owner","Owner (everything)"],["cashier","Cashier (no costs or profit)"]]},{k:"password",l:"Password (6 or more characters)",t:"password"}],{role:n?"cashier":"owner"});
+  const r=d&&await act("user_save",d,"User saved");if(r){if(r.d&&r.d.session)sessionStorage.setItem("sess",r.d.session);await boot();render();if(r.d&&r.d.recovery)showRecovery(r.d.recovery)}};
+ACT.uedit=async b=>{const u=JSON.parse(b.dataset.j),d=await askForm("Edit user",[{k:"name",l:"Full name"},{k:"username",l:"Username"},{k:"role",l:"Role",t:"select",o:[["owner","Owner"],["cashier","Cashier"]]},{k:"password",l:"New password (leave blank to keep)",t:"password"}],u);
+  if(d&&await act("user_save",{...d,id:u.id},"Saved")){await boot();viewSet()}};
+ACT.recnew=b=>sure(b,async()=>{const r=await act("recovery_new",{});if(r)showRecovery(r.d,"Your NEW recovery code (the old one no longer works):")});
+ACT.udel=b=>sure(b,async()=>{if(await act("user_delete",{id:b.dataset.id},"User deleted")){await boot();render()}});
+ACT.impv4=b=>sure(b,async()=>{if(await act("import_v4",{},"Imported from POS V4")){await boot();go("home")}});
+ACT.bpclear=async()=>{if(await act("settings_save",{backup_password:"__clear__"},"Backup password removed")){await boot();viewSet()}};
+
+/* ================= V5.11: Touch, trade-in, warranty claims, bulk prices ================= */
+const pn=p=>/^Touch/.test(p.category||"")?"Touch":"Alfa";
+function resetProv(){Object.assign(VD,{cards:[],price:"",ret:"",rec:"",cid:""});Object.assign(AL,{sid:"",card:"",price:"",rec:"",cid:""})}
+const SQD=[["svc","Services"],["usd","Dollars"],["card","Cards"],["val","Validity days"]];
+const provSwitch=()=>`<div class="sqs">${SQD.map(([m,l])=>{const sp=(INFO.sqpics||{})[PROV+":"+m];return`<div class="card sqb ${AMODE===m?"on":""}" data-a="asq" data-m="${m}">${sp?`<img class="sqimg" alt="" src="${imgUrl(sp)}">`:""}<b>${l}</b></div>`}).join("")}</div>`;
+ACT.asq=b=>{const m=b.dataset.m;if(m==="val"){resetProv();return viewVal()}AL.type=m;AL.price="";AL.sid="";AL.card="";return viewAlfa()};
+const reAlfa=/\bAlfa\b/g;
+function provNode(n){if(PROV!=="touch")return;const p=n.parentElement;if(!p||/^(SCRIPT|STYLE|TEXTAREA)$/.test(p.tagName)||!p.closest("#main,#modal"))return;reAlfa.lastIndex=0;if(reAlfa.test(n.nodeValue)){reAlfa.lastIndex=0;n.nodeValue=n.nodeValue.replace(reAlfa,"Touch")}reAlfa.lastIndex=0}
+function provEl(root){if(PROV!=="touch"||(root.closest&&!root.closest("#main,#modal")&&!root.querySelector("#main,#modal")))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),ns=[];while(w.nextNode())ns.push(w.currentNode);ns.forEach(provNode);
+  if(root.querySelectorAll)root.querySelectorAll("[placeholder],[title]").forEach(e=>["placeholder","title"].forEach(a=>{const v=e.getAttribute(a);if(v&&/\bAlfa\b/.test(v))e.setAttribute(a,v.replace(/\bAlfa\b/g,"Touch"))}))}
+new MutationObserver(ms=>{if(PROV!=="touch")return;ms.forEach(m=>{m.addedNodes.forEach(n=>n.nodeType===1?provEl(n):n.nodeType===3&&provNode(n));if(m.type==="characterData")provNode(m.target)})}).observe(document.body,{childList:true,subtree:true,characterData:true});
+
+/* ---- bulk price change and Excel export */
+ACT.bulkp=async()=>{const cats=await api("categories"),d=await askForm("Bulk price change",[{k:"category",l:"Apply to",t:"select",o:[["","All categories"],...cats.map(c=>[c,c])]},{k:"pct",l:"Change in % (use a minus to lower prices, e.g. -5)",t:"number"},{k:"round_to",l:"Round the new prices to",t:"select",o:[["0","No rounding"],["0.05","0.05"],["0.1","0.10"],["0.25","0.25"],["0.5","0.50"],["1","1"]]}],{round_to:"0.05"},"Apply");
+  if(!d)return;const r=await act("price_bulk",d);if(r){toast(r.d+" prices changed. You can undo it from Inventory.",8000);viewInv()}};
+async function loadUndo(){const u=$("#undoslot");if(!u)return;try{const i=await api("price_undo_info");u.innerHTML=i.count?`<button class="bad sm" data-a="pundo">Undo last price change (${i.count})</button>`:""}catch(e){}}
+ACT.pundo=b=>sure(b,async()=>{const r=await act("price_undo",{});if(r){toast(r.d+" prices restored");viewInv()}});
+const exportRpt=async name=>{toast("Exporting…",9000);const r=await act("report_export",{name,d1:todayS(),d2:todayS()});if(r)toast("Saved: "+r.d,9000)};
+ACT.iexp=()=>exportRpt("Inventory list");
+ACT.iexp2=()=>exportRpt("Phones in stock (IMEIs)");
+
+/* ---- trade-in (used phones) */
+let TI={model:"",imei:"",cost:"",price:"",wd:"14",sname:"",sphone:"",idn:"",cond:"Good",notes:"",pay:"1",pcur:"USD"};
+async function viewTradein(){const L=await api("tradeins"),f=(l,k,x="")=>`<div><label>${l}</label><input data-i="ti" data-k="${k}" value="${esc(TI[k])}" ${x}></div>`,sel=(l,k,o)=>`<div><label>${l}</label><select data-c="ti" data-k="${k}">${opts(o,TI[k])}</select></div>`;
+  $("#main").innerHTML=`<div class="card mb"><h3>Trade-in — buy a used phone</h3><p class="mu">Record a phone you buy from a customer. It goes into Inventory as a used phone with its IMEI and cost, and you can take the payout from the drawer so the cash count stays right.</p>
+  <div class="form">${f("Phone model","model",'placeholder="iPhone 12 128GB"')}${f("IMEI (scan or type)","imei",'id="tiimei"')}${f("Paid to the seller ($)","cost",'type="number" step="any"')}${f("Selling price ($)","price",'type="number" step="any"')}${f("Warranty you give (days)","wd",'type="number"')}</div>
+  <div class="form">${f("Seller name","sname")}${f("Seller phone","sphone")}${f("ID note (ID number or paper)","idn")}${sel("Condition","cond",["Excellent","Good","Fair","Poor"])}</div>
+  ${f("Notes","notes")}
+  <div class="form">${sel("Take the payout from the drawer","pay",[["1","Yes"],["0","No"]])}${sel("Paid in","pcur",["USD","LBP"])}</div>
+  <div class="row"><span class="mu">Profit shows in the list when the phone is sold.</span><button class="pri" data-a="tisave">Save trade-in</button></div></div>
+  <h3>Recent trade-ins</h3>${T(["Date","Phone","IMEI","From","Paid","Asking","Status","Profit"],L.map(t=>`<tr><td>${ft(t.date)}</td><td>${esc(t.model)}</td><td>${esc(t.imei)}</td><td>${esc(t.seller_name)}${t.seller_phone?`<br><small class="mu">${esc(t.seller_phone)}</small>`:""}</td><td>${money(t.cost)}</td><td>${money(t.price)}</td><td>${t.status==="sold"?'<span class="tag">Sold</span>':'<span class="tag ok">In stock</span>'}</td><td>${t.sold_price?money(t.sold_price-t.cost):"—"}</td></tr>`),"No trade-ins yet.")}`;
+  $("#tiimei").focus()}
+INP.ti=el=>{TI[el.dataset.k]=el.value};CHG.ti=el=>{TI[el.dataset.k]=el.value};
+ACT.tisave=async()=>{const r=await act("tradein_save",{model:TI.model,imei:TI.imei,cost:TI.cost,price:TI.price,warranty_days:TI.wd,seller_name:TI.sname,seller_phone:TI.sphone,id_note:TI.idn,condition:TI.cond,notes:TI.notes,pay:TI.pay,paid_cur:TI.pcur});
+  if(r){Object.assign(TI,{model:"",imei:"",cost:"",price:"",sname:"",sphone:"",idn:"",notes:""});toast("Saved - the phone is now in Inventory");viewTradein()}};
+
+/* ---- warranty claims */
+let CL={q:"",st:"All",found:[]};
+const CLST=["Open","Sent to supplier","Repaired","Replaced","Rejected","Closed"];
+async function viewClaims(){const L=await api("claims",{status:CL.st});
+  $("#main").innerHTML=`<div class="card mb"><h3>Warranty claims</h3><div class="form"><div><label>Find the sold phone (IMEI, invoice number, customer name or phone)</label><input id="clq" value="${esc(CL.q)}" data-i="clq" placeholder="Scan or type, then Enter"></div><div><button class="pri" data-a="clfind">Search</button></div></div><div id="clfound"></div></div>
+  <div class="chips">${["All",...CLST].map(s=>`<button class="sm ${CL.st===s?"pri":""}" data-a="clst" data-s="${s}">${s}</button>`).join("")}</div>
+  ${T(["Opened","Phone","Customer","Problem","Warranty","Status",""],L.map(c=>`<tr><td>${ft(c.date)}</td><td>${esc(c.product)}<br><small class="mu">${esc(c.imei)}</small></td><td>${esc(c.customer)}${c.phone?`<br><small class="mu">${esc(c.phone)}</small>`:""}</td><td>${esc(c.issue)}${c.resolution?`<br><small class="okc">${esc(c.resolution)}</small>`:""}</td><td>${c.warranty_until?(c.warranty_until>=todayS()?'<span class="tag ok">Until '+esc(c.warranty_until)+"</span>":'<span class="tag warn">Expired '+esc(c.warranty_until)+"</span>"):"—"}</td><td><span class="tag ${["Repaired","Replaced","Closed"].includes(c.status)?"ok":c.status==="Rejected"?"":"warn"}">${esc(c.status)}</span></td><td><button class="sm" data-a="clup" data-j='${esc(JSON.stringify(c))}'>Update</button> <button class="sm bad" data-a="cldel" data-id="${c.id}">Delete</button></td></tr>`),"No warranty claims.")}`;drawFound()}
+function drawFound(){const e=$("#clfound");if(!e)return;e.innerHTML=CL.found.length?T(["Sold","Phone","IMEI","Customer","Warranty",""],CL.found.map(f=>`<tr><td>${ft(f.date)} · #${f.sale_id}</td><td>${esc(f.name)}</td><td>${esc(f.imei||"")}</td><td>${esc(f.customer||"")}${f.phone?`<br><small class="mu">${esc(f.phone)}</small>`:""}</td><td>${f.warranty_until?(f.warranty_until>=todayS()?'<span class="tag ok">Under warranty until '+esc(f.warranty_until)+"</span>":'<span class="tag warn">Expired '+esc(f.warranty_until)+"</span>"):"No warranty"}</td><td><button class="sm pri" data-a="clnew" data-j='${esc(JSON.stringify(f))}'>Open claim</button></td></tr>`),""):""}
+INP.clq=el=>{CL.q=el.value};
+document.addEventListener("keydown",e=>{if(e.target.id==="clq"&&e.key==="Enter"){e.preventDefault();ACT.clfind()}});
+ACT.clfind=async()=>{CL.q=$("#clq").value;CL.found=CL.q.trim()?await api("warranty",{q:CL.q}):[];drawFound();if(!CL.found.length&&CL.q.trim())toast("Nothing found for that search")};
+ACT.clst=b=>{CL.st=b.dataset.s;viewClaims()};
+ACT.clnew=async b=>{const f=JSON.parse(b.dataset.j),d=await askForm("New warranty claim — "+f.name,[{k:"issue",l:"What is the problem?"},{k:"supplier",l:"Supplier it will go to (optional)"}],{},"Open claim");
+  if(d&&await act("claim_save",{imei:f.imei,sale_id:f.sale_id,issue:d.issue,supplier:d.supplier},"Claim opened")){CL.found=[];viewClaims()}};
+ACT.clup=async b=>{const c=JSON.parse(b.dataset.j),d=await askForm("Update claim — "+c.product,[{k:"status",l:"Status",t:"select",o:CLST},{k:"supplier",l:"Supplier"},{k:"resolution",l:"What was done / the result"},{k:"notes",l:"Notes"}],c,"Save");
+  if(d&&await act("claim_update",{...d,id:c.id},"Claim updated"))viewClaims()};
+ACT.cldel=b=>sure(b,async()=>{if(await act("claim_delete",{id:b.dataset.id}))viewClaims()});
+
+/* ---- backups health, shop network, restore from file */
+const backupKpi=d=>{if(ME.role!=="owner")return"";const t=s=>s?new Date(String(s).replace(" ","T")):null,lb=t(d.last_backup),lo=t(d.last_offsite),stale=!lo||(Date.now()-lo)>2*864e5;
+  return`<div class="card" data-a="goto" data-t="set"><span class="mu">Backups</span><b class="${stale?"low":""}" style="font-size:calc(15px*var(--fs,1))">${lb?"last "+ft(d.last_backup):"none yet"}</b><small class="${stale?"low":"mu"}">${lo?"off-site "+ft(d.last_offsite):"no off-site copy yet"}${stale?" — set Google Drive or email backup":""}</small></div>`};
+const lanHTML=li=>`<p class="mu">Status: <b class="${li.on?"okc":""}">${li.on?"ON":"OFF"}</b>${li.wanted&&!li.on?" — restart the program to turn it on":""}${!li.wanted&&li.on?" — restart the program to turn it off":""}</p>${li.on&&li.urls.length?`<p>On the other device (same Wi-Fi) open one of these addresses in its browser:<br>${li.urls.map(u=>`<b>${esc(u)}</b>`).join("<br>")}</p>`:""}<p class="mu">Everyone signs in with their own user and PIN. The main computer must stay on. From outside the shop (for example from home): install the free Tailscale app on this computer and on the phone, sign in with the same account, then open the address that starts with 100. on the phone. The first time, Windows asks to allow the program on private networks - choose Allow.</p>`;
+CHG.bfile=async el=>{const f=el.files[0];if(!f)return;
+  const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]||"");r.onerror=rej;r.readAsDataURL(f)});
+  const u=await act("backup_upload",{name:f.name,b64});if(!u)return;
+  const q=await askForm("Restore "+u.d+"? The current data is replaced (a safety backup is made first).",[],{},"Restore now");if(!q)return;
+  if(await act("backup_restore",{name:u.d},"Backup restored")){await boot();go("home")}};
+
+/* ================= Dashboard tab ================= */
+const DAYMS=864e5,DX={per:30,rows:[],d:null,q:"",sort:"revenue",dir:-1};
+const DXC={rev:"var(--ac)",pro:"var(--ok)",usd:"var(--ac)",lbp:"#d98b1c",debt:"var(--bad)"};
+const dxM=v=>(v<0?"-":"")+cur()+Math.round(Math.abs(v)).toLocaleString("en-US");
+const dxMb=v=>Math.abs(v)>=10000?cur()+new Intl.NumberFormat("en",{notation:"compact",maximumFractionDigits:1}).format(v):dxM(v);
+const dxP=v=>Math.round(v*100)+"%",dxP1=v=>(v*100).toFixed(1)+"%",dxSg=v=>v>0?"+":v<0?"−":"";
+const dxSP=v=>dxSg(v)+dxP1(Math.abs(v));
+const dxDay=s=>new Date(s+"T00:00:00Z").toLocaleDateString("en",{month:"short",day:"numeric",timeZone:"UTC"});
+const dxDayY=s=>new Date(s+"T00:00:00Z").toLocaleDateString("en",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"});
+const dxIso=t=>new Date(t).toISOString().slice(0,10);
+const dxWin=(rows,from,to)=>rows.filter(r=>{const t=Date.parse(r.day);return t>from&&t<=to});
+const dxSum=rs=>{const t={revenue:0,profit:0,items:0,usd:0,lbp:0,debt:0};rs.forEach(r=>{t.revenue+=r.revenue;t.profit+=r.revenue-r.cost;t.items+=r.qty;t.usd+=r.paid_usd;t.lbp+=r.paid_lbp_usd;t.debt+=r.on_debt});return t};
+const dxCat=rs=>{const o={};rs.forEach(r=>{const x=o[r.category]=o[r.category]||{category:r.category,revenue:0,profit:0,items:0};x.revenue+=r.revenue;x.profit+=r.revenue-r.cost;x.items+=r.qty});return o};
+let DXT=null;
+async function viewDash(){
+  const[rows,d]=await Promise.all([api("dash_rows"),api("dashboard")]);DX.rows=rows;DX.d=d;
+  $("#main").innerHTML=`<div class="dx" id="dx"></div>`;drawDash()}
+function drawDash(){
+  const n=DX.per,end=Date.parse(todayS()),cu=dxWin(DX.rows,end-n*DAYMS,end),pr=dxWin(DX.rows,end-2*n*DAYMS,end-n*DAYMS),c=dxSum(cu),p=dxSum(pr),ch=(a,b)=>b?a/b-1:null;
+  const mg=c.revenue?c.profit/c.revenue:null,pm=p.revenue?p.profit/p.revenue:null,cc=dxCat(cu),pc=dxCat(pr);
+  const cats=Object.values(cc).map(x=>({...x,margin:x.revenue?x.profit/x.revenue:null,rs:c.revenue?x.revenue/c.revenue:0,ps:c.profit?x.profit/c.profit:0,chg:pc[x.category]&&pc[x.category].revenue?x.revenue/pc[x.category].revenue-1:null})).sort((a,b)=>b.revenue-a.revenue);
+  DX.items=Object.values(cu.reduce((o,r)=>{const x=o[r.category+"|"+r.item]=o[r.category+"|"+r.item]||{item:r.item,category:r.category,qty:0,revenue:0,cost:0};x.qty+=r.qty;x.revenue+=r.revenue;x.cost+=r.cost;return o},{})).map(x=>({...x,profit:x.revenue-x.cost,margin:x.revenue?(x.revenue-x.cost)/x.revenue:null}));
+  const best=cats.filter(x=>x.rs>0).sort((a,b)=>(b.ps-b.rs)-(a.ps-a.rs))[0],rc=ch(c.revenue,p.revenue);
+  const lede=c.revenue||p.revenue?`Revenue was <b>${dxMb(c.revenue)}</b> over the last ${n} days${rc!=null?`, ${rc>=0?"up":"down"} <b>${dxP1(Math.abs(rc))}</b> on the ${n} days before`:""}. `+(best&&best.ps>best.rs?`<b>${esc(best.category)}</b> made <b>${dxP(best.ps)}</b> of the profit from <b>${dxP(best.rs)}</b> of the revenue.`:""):"No sales in this period yet.";
+  const tile=(l,v,chg,dir,f)=>`<div class="card dx-tile"><div class="mu" style="font-size:calc(12px*var(--fs,1))">${l}</div><div class="v">${v}</div><div class="dx-delta"><span class="${chg==null||!chg?"":(chg>0)===(dir>0)?"dx-good":"dx-bad"}">${chg==null?"—":f(chg)}</span> vs previous ${n} days</div></div>`;
+  const first=dxIso(end-(n-1)*DAYMS),k=DX.d;
+  const rn=(l,v,t,sb)=>`<div class="card" data-a="goto" data-t="${t}" style="cursor:pointer"><span class="mu" style="font-size:calc(12px*var(--fs,1))">${l}</span><b style="display:block;font-size:calc(18px*var(--fs,1))">${v}</b>${sb?`<small class="mu">${sb}</small>`:""}</div>`;
+  $("#dx").innerHTML=`<div class="dx-head"><div style="flex:1 1 22rem;min-width:0"><h1 class="dx-title">${esc(SET.shop_name||"Shop")} — sales dashboard</h1><p class="dx-lede">${lede}</p></div>
+    <div><div class="dx-seg">${[7,30,90].map(x=>`<button class="${x===n?"on":""}" data-a="dxper" data-n="${x}">${x} days</button>`).join("")}</div><div class="dx-range">${dxDay(first)} – ${dxDayY(dxIso(end))}</div></div></div>
+  <div class="dx-tiles">${tile("Revenue",dxMb(c.revenue),ch(c.revenue,p.revenue),1,dxSP)}${tile("Profit",dxMb(c.profit),ch(c.profit,p.profit),1,dxSP)}${tile("Margin",mg==null?"—":dxP1(mg),mg!=null&&pm!=null?mg-pm:null,1,v=>dxSg(v)+(Math.abs(v)*100).toFixed(1)+" pts")}${tile("Items sold",c.items.toLocaleString("en-US"),ch(c.items,p.items),1,dxSP)}${tile("New customer debt",dxM(c.debt),ch(c.debt,p.debt),-1,dxSP)}</div>
+  <p class="dx-defs">Profit is revenue minus what the goods cost you, before shop expenses. Margin is profit as a share of revenue. New customer debt is the part of sales left unpaid.</p>
+  <div class="card dx-card"><div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px"><h2>Revenue and profit per day</h2><div class="dx-legend"><span><i class="dx-sw" style="background:${DXC.rev}"></i>Revenue</span><span><i class="dx-sw" style="background:${DXC.pro}"></i>Profit</span></div></div><p class="dx-note">One bar per day, last ${n} days.</p><div class="dx-chart" id="dxdaily"></div></div>
+  <div class="dx-grid"><div class="card dx-card"><h2>Sales by category</h2><p class="dx-note">Change compares revenue with the previous ${n} days.</p>${cats.length?`<table class="dx-table"><thead><tr><th>Category</th><th class="num">Revenue</th><th class="num">Profit</th><th class="num">Margin</th><th class="num">Change</th></tr></thead><tbody>${cats.map(x=>`<tr><td>${esc(x.category)}</td><td class="num"><div class="dx-rc"><span class="dx-rt"><i class="dx-bar" style="display:block;width:${(x.revenue/(cats[0].revenue||1))*100}%;margin-left:auto;background:${DXC.rev}"></i></span>${dxM(x.revenue)}</div></td><td class="num">${dxM(x.profit)}</td><td class="num">${x.margin==null?"—":dxP1(x.margin)}</td><td class="num ${x.chg>0?"dx-good":x.chg<0?"dx-bad":""}">${x.chg==null?"—":dxSP(x.chg)}</td></tr>`).join("")}</tbody></table>`:'<p class="mu">No sales yet.</p>'}</div>
+  <div class="card dx-card"><div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px"><h2>Where the profit comes from</h2><div class="dx-legend"><span><i class="dx-sw" style="background:${DXC.rev}"></i>Share of revenue</span><span><i class="dx-sw" style="background:${DXC.pro}"></i>Share of profit</span></div></div><p class="dx-note">Each category's share of the shop's revenue and profit, last ${n} days.</p><div class="dx-mix">${cats.length?cats.map(x=>{const mx=Math.max(...cats.map(y=>Math.max(y.rs,y.ps)))||1,ln=(v,col)=>`<div class="dx-mline"><i class="dx-bar" style="width:calc((100% - 3rem) * ${Math.max(0,v)/mx});background:${col}"></i><span class="dx-mv">${dxP(v)}</span></div>`;return`<div class="dx-mrow"><div class="n">${esc(x.category)}</div><div>${ln(x.rs,DXC.rev)}${ln(x.ps,DXC.pro)}</div></div>`}).join(""):'<p class="mu">No sales yet.</p>'}</div></div></div>
+  <div class="card dx-card"><h2>How customers paid</h2><p class="dx-note">Revenue split by payment, last ${n} days. Lira payments are shown at their dollar value.</p>${(()=>{const pt=[["Paid in USD",c.usd,DXC.usd],["Paid in LBP",c.lbp,DXC.lbp],["Left as customer debt",c.debt,DXC.debt]],sh=v=>c.revenue?v/c.revenue:0;return`<div class="dx-pay">${pt.map(x=>`<div style="flex:${Math.max(0,sh(x[1]))} 1 0;background:${x[2]};min-width:2px"></div>`).join("")}</div><div class="dx-pkeys">${pt.map(x=>`<div><div class="mu" style="font-size:calc(12px*var(--fs,1))"><i class="dx-sw" style="background:${x[2]}"></i>${x[0]}</div><div class="pv">${dxM(x[1])}</div><div class="mu" style="font-size:calc(12px*var(--fs,1))">${dxP1(sh(x[1]))} of revenue</div></div>`).join("")}</div>`})()}</div>
+  <div class="card dx-card"><div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center"><h2>Sales by item</h2><input id="dxq" data-i="dxq" placeholder="Search items" value="${esc(DX.q)}" style="max-width:14rem"></div><p class="dx-note">Every item sold, last ${n} days. Click a heading to sort.</p><div class="dx-scroll" id="dxitems"></div></div>
+  <h3 style="margin:6px 0 0">Right now</h3><div class="dx-tiles">${rn("Sales today",dxM(k.revenue),"sales",k.sales_count+" sales")}${rn("Profit today",k.profit==null?"—":dxM(k.profit),"day")}${rn("Cash received today",dxM(k.cash),"day")}${rn("Customer debts",dxM(k.debts),"debt")}${rn("Owed to suppliers",dxM(k.payable),"sup")}${rn("Low stock items",k.low_count,"inv")}${rn("Overdue installments",k.overdue,"debt")}${rn("Open repairs",k.repairs_open,"rep")}${rn("Alfa stock",dxM(k.alfa.amount),"alfa","cost "+k.alfa.avg.toFixed(3)+" per $1")}${rn("Touch stock",dxM(k.touch.amount),"touch","cost "+k.touch.avg.toFixed(3)+" per $1")}</div>`;
+  dxDaily(n,end,cu);dxItems()}
+function dxDaily(n,end,cu){const box=$("#dxdaily");if(!box)return;const by={};cu.forEach(r=>{const x=by[r.day]=by[r.day]||{revenue:0,profit:0};x.revenue+=r.revenue;x.profit+=r.revenue-r.cost});
+  const data=[];for(let i=n-1;i>=0;i--){const day=dxIso(end-i*DAYMS),x=by[day]||{revenue:0,profit:0};data.push({day,revenue:Math.round(x.revenue*100)/100,profit:Math.round(x.profit*100)/100})}
+  const W=box.clientWidth||640,H=240,m={l:50,r:6,t:8,b:26},mx=Math.max(1,...data.map(x=>Math.max(x.revenue,x.profit))),e=Math.pow(10,Math.floor(Math.log10(mx/4||1))),f=(mx/4)/e,st=(f<=1?1:f<=2?2:f<=5?5:10)*e,top=Math.ceil(mx/st)*st,ticks=[];for(let v=0;v<=top+1e-9;v+=st)ticks.push(v);
+  const y=v=>H-m.b-(Math.max(0,v)/top)*(H-m.b-m.t),bw=(W-m.l-m.r)/data.length,cx=i=>m.l+bw*i+bw/2,bar=Math.min(30,Math.max(2,bw*0.7)),yf=v=>cur()+(v>=1000?(v/1000).toFixed(v%1000?1:0)+"k":v);
+  const k=Math.max(1,Math.ceil(data.length/Math.max(1,Math.floor((W-m.l-m.r)/72))));
+  let s=`<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Revenue and profit per day">`;
+  ticks.forEach(v=>{s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--bd)"/><text x="${m.l-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--mu)">${yf(v)}</text>`});
+  data.forEach((x,i)=>{const h0=Math.max(0,y(0)-y(x.revenue));s+=`<rect class="dxb" data-i="${i}" x="${cx(i)-bar/2}" y="${y(x.revenue)}" width="${bar}" height="${h0}" rx="${Math.min(4,bar/2)}" fill="${DXC.rev}"/>`});
+  s+=`<path d="${data.map((x,i)=>(i?"L":"M")+cx(i)+" "+y(x.profit)).join(" ")}" fill="none" stroke="${DXC.pro}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  data.forEach((x,i)=>{if((data.length-1-i)%k===0)s+=`<text x="${Math.max(18,Math.min(W-18,cx(i)))}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--mu)">${dxDay(x.day)}</text>`});
+  data.forEach((x,i)=>{s+=`<rect class="dxh" data-i="${i}" x="${m.l+bw*i}" y="0" width="${bw}" height="${H-m.b+4}" fill="transparent"/>`});
+  box.innerHTML=s+`</svg><div class="dx-tip" hidden></div>`;
+  const tip=box.querySelector(".dx-tip"),bars=[...box.querySelectorAll(".dxb")];
+  box.querySelectorAll(".dxh").forEach(r=>{const i=+r.dataset.i,x=data[i];
+    r.addEventListener("pointermove",ev=>{bars.forEach((b,j)=>b.style.opacity=j===i?1:.55);const bx=box.getBoundingClientRect();tip.innerHTML=`<div class="mu">${dxDayY(x.day)}</div><div><i class="dx-sw" style="background:${DXC.rev}"></i>Revenue <b>${dxM(x.revenue)}</b></div><div><i class="dx-sw" style="background:${DXC.pro}"></i>Profit <b>${dxM(x.profit)}</b></div>`;tip.hidden=false;let l=ev.clientX-bx.left+14;if(l+tip.offsetWidth>bx.width)l=ev.clientX-bx.left-tip.offsetWidth-14;tip.style.left=Math.max(0,l)+"px";tip.style.top=Math.max(0,ev.clientY-bx.top-tip.offsetHeight-10)+"px"});
+    r.addEventListener("pointerleave",()=>{bars.forEach(b=>b.style.opacity="");tip.hidden=true})})}
+function dxItems(){const box=$("#dxitems");if(!box)return;const q=DX.q.trim().toLowerCase(),{sort,dir}=DX;
+  const rs=(DX.items||[]).filter(r=>!q||(r.item+" "+r.category).toLowerCase().includes(q)).sort((a,b)=>{const x=a[sort],y=b[sort];return typeof x==="string"?dir*x.localeCompare(y):dir*((x??-Infinity)-(y??-Infinity))});
+  const th=(f,l,cl="")=>`<th class="${cl}" ${sort===f?`aria-sort="${dir<0?"descending":"ascending"}"`:""}><button data-a="dxsort" data-f="${f}">${l}</button></th>`;
+  box.innerHTML=rs.length?`<table class="dx-table"><thead><tr>${th("item","Item")}${th("category","Category")}${th("qty","Sold","num")}${th("revenue","Revenue","num")}${th("profit","Profit","num")}${th("margin","Margin","num")}</tr></thead><tbody>${rs.map(r=>`<tr><td>${esc(r.item)}</td><td class="mu">${esc(r.category)}</td><td class="num">${r.qty.toLocaleString("en-US")}</td><td class="num">${dxM(r.revenue)}</td><td class="num">${dxM(r.profit)}</td><td class="num">${r.margin==null?"—":dxP1(r.margin)}</td></tr>`).join("")}</tbody></table>`:'<p class="mu">Nothing sold in this period.</p>'}
+ACT.dxper=b=>{DX.per=+b.dataset.n;drawDash()};
+ACT.dxsort=b=>{const f=b.dataset.f;if(DX.sort===f)DX.dir=-DX.dir;else{DX.sort=f;DX.dir=f==="item"||f==="category"?1:-1}dxItems()};
+INP.dxq=el=>{DX.q=el.value;dxItems()};
+window.addEventListener("resize",()=>{clearTimeout(DXT);DXT=setTimeout(()=>{if(tab==="dash"&&$("#dxdaily")){const n=DX.per,end=Date.parse(todayS());dxDaily(n,end,dxWin(DX.rows,end-n*DAYMS,end))}},150)});
+
+/* ================= display sizes: zoom, text, pictures, boxes - saved separately for each screen ================= */
+const DK=["z","fs","pic","box"],DLIM={z:[.6,2],fs:[.7,1.7],pic:[.4,2.5],box:[.6,2]},DDEF={z:1,fs:1,pic:1,box:1},DLAB={z:"Zoom (everything)",fs:"Text",pic:"Pictures",box:"Boxes (Sell, Home and Alfa / Touch)"};
+let DS={all:{...DDEF},tabs:{}};
+try{const s0=JSON.parse(localStorage.getItem("disp2")||"null");if(s0)DS={all:{...DDEF,...s0.all},tabs:s0.tabs||{}};else{const o=JSON.parse(localStorage.getItem("disp")||"{}"),z0=parseFloat(localStorage.getItem("zoom"))||1;DS.all={...DDEF,...o,z:z0}}}catch(e){}
+const dispFor=t=>({...DS.all,...(DS.tabs[t]||{})});
+const clampD=(k,v)=>Math.max(DLIM[k][0],Math.min(DLIM[k][1],Math.round((+v||1)*10)/10));
+const tabName=()=>(TABS.find(t=>t[0]===tab)||[0,tab])[1];
+function saveDisp(){try{localStorage.setItem("disp2",JSON.stringify(DS))}catch(e){}}
+function applyDisp(){const d=dispFor(tab),r=document.documentElement.style;r.setProperty("--fs",d.fs);r.setProperty("--pic",d.pic);r.setProperty("--box",d.box);document.body.style.zoom=d.z;
+  const b=$("#zpct");if(b)b.textContent=Math.round(d.z*100)+"%";DK.forEach(k=>{const e=$("#dv-"+k);if(e)e.textContent=Math.round(d[k]*100)+"%"});window.dispatchEvent(new Event("resize"))}
+function bump(k,dl){const d=dispFor(tab);DS.tabs[tab]={...d,[k]:clampD(k,d[k]+dl)};saveDisp();applyDisp()}
+ACT.zin=()=>bump("z",.1);ACT.zout=()=>bump("z",-.1);ACT.zreset=()=>{DS.tabs[tab]={...dispFor(tab),z:1};saveDisp();applyDisp()};
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&["+","=","-","_","0"].includes(e.key)){e.preventDefault();e.key==="0"?ACT.zreset():(e.key==="-"||e.key==="_")?ACT.zout():ACT.zin()}});
+document.addEventListener("wheel",e=>{if(e.ctrlKey){e.preventDefault();bump("z",e.deltaY<0?.1:-.1)}},{passive:false});
+ACT.dspopen=()=>{const d=dispFor(tab),row=k=>`<div class="row" style="padding:8px 0;border-top:1px solid var(--bd)"><b>${DLAB[k]}</b><span><button class="sm" data-a="dsp" data-w="${k}" data-d="-1">−</button> <b id="dv-${k}" style="display:inline-block;min-width:3.2em;text-align:center">${Math.round(d[k]*100)}%</b> <button class="sm" data-a="dsp" data-w="${k}" data-d="1">+</button></span></div>`;
+  openModal(`<h3>Display size — ${esc(tabName())} only</h3><p class="mu">These sizes are saved for this screen only. The other screens keep their own. Each device remembers its own choice.</p>${DK.map(row).join("")}<div class="row" style="margin-top:12px;flex-wrap:wrap;gap:8px"><button data-a="dspreset">Back to normal (this screen)</button><button data-a="dspall">Use these sizes on all screens</button><button class="pri" data-a="mclose">Done</button></div>`)};
+ACT.dsp=b=>bump(b.dataset.w,.1*(+b.dataset.d));
+ACT.dspreset=()=>{DS.tabs[tab]={...DDEF};saveDisp();applyDisp()};
+ACT.dspall=()=>{DS.all={...dispFor(tab)};DS.tabs={};saveDisp();applyDisp();toast("Applied to all screens")};
+applyDisp();
+
+/* ================= zoom and pictures ================= */
+const imgUrl=sp=>{const a=String(sp).split(".");return`/img/${a[0]}?v=${a[1]}&t=${TOKEN}`};
+function setTabPic(){const t=$("#tabpic");if(t)t.innerHTML=(INFO.pics||{})[tab]?`<img class="banner" alt="" src="${imgUrl(INFO.pics[tab])}">`:""}
+function pickImage(max){return new Promise(res=>{const i=document.createElement("input");i.type="file";i.accept="image/*";i.onchange=()=>{const f=i.files[0];if(!f)return res(null);const fr=new FileReader();
+  fr.onload=()=>{const im=new Image();im.onload=()=>{const m=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*m));c.height=Math.max(1,Math.round(im.height*m));const g=c.getContext("2d"),png=f.type==="image/png";if(!png){g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height)}g.drawImage(im,0,0,c.width,c.height);const mime=png?"image/png":"image/jpeg";res({b64:c.toDataURL(mime,.82).split(",")[1],mime})};im.onerror=()=>{toast("Could not read this picture");res(null)};im.src=fr.result};fr.readAsDataURL(f)};i.click()})}
+let PIC={kind:"product",q:""};
+const PICKINDS=[["product","Products"],["alfa_service","Alfa services"],["alfa_card","Alfa cards"],["touch_service","Touch services"],["touch_card","Touch cards"],["sq","Sale-type squares (Alfa and Touch tabs)"],["tab","Screens (a picture at the top of a tab)"]];
+function drawPics(){const f=document.querySelector('select[data-c="picfit"]');if(f)f.value=SET.pic_fit==="cover"?"cover":"contain";const b=$("#picbox");if(!b)return;
+  b.innerHTML=`<div class="form"><div><label>Add pictures to</label><select data-c="pic" data-k="kind">${opts(PICKINDS,PIC.kind)}</select></div>${PIC.kind==="product"?`<div><label>Search</label><input data-i="pic" data-k="q" value="${esc(PIC.q)}" placeholder="Name or barcode"></div>`:""}</div><div id="piclist"></div>`;drawPicList()}
+async function drawPicList(){const box=$("#piclist");if(!box)return;const k=PIC.kind;let items=[],kind=k;
+  if(k==="product"){const q=PIC.q.trim().toLowerCase();items=(await api("products",{})).filter(p=>!p.alfa_service_id&&!p.alfa_card_id&&(!q||(p.name+" "+(p.barcode||"")).toLowerCase().includes(q))).slice(0,80).map(p=>({ref:p.id,name:p.name,sub:p.category||"",img:p.img}))}
+  else if(k==="sq"){items=["alfa","touch"].flatMap(pr=>SQD.map(([m,l])=>({ref:pr+":"+m,name:(pr==="alfa"?"Alfa":"Touch")+" - "+l,sub:"square at the top of the "+(pr==="alfa"?"Alfa":"Touch")+" tab",img:(INFO.sqpics||{})[pr+":"+m]})));kind="sq"}
+  else if(k==="tab"){items=TABS.filter(t=>t[0]!=="set").map(t=>({ref:t[0],name:t[1],sub:"shown at the top of this screen and on its Home button",img:(INFO.pics||{})[t[0]]}));kind="tab"}
+  else{const pr=k.startsWith("touch")?"touch":"alfa",card=k.endsWith("card");items=(await api(card?"alfa_cards":"alfa_services",{provider:pr})).map(x=>({ref:x.id,name:x.name,sub:card?"card type":(x.alfa+"$ credit"),img:x.img}));kind=card?"card":"service"}
+  box.innerHTML=items.length?items.map(i=>`<div class="row" style="padding:6px 0;border-top:1px solid var(--bd)"><span style="display:flex;align-items:center;gap:10px;min-width:0">${i.img?`<img class="th" style="width:calc(52px*var(--pic,1));height:calc(52px*var(--pic,1))" alt="" src="${imgUrl(i.img)}">`:'<span class="th mu" style="display:inline-flex;align-items:center;justify-content:center;border:1px dashed var(--bd);font-size:calc(11px*var(--fs,1))">none</span>'}<span style="min-width:0"><b>${esc(i.name)}</b><br><small class="mu">${esc(i.sub)}</small></span></span><span><button class="sm" data-a="imgset" data-k="${kind}" data-r="${esc(i.ref)}">${i.img?"Change":"Choose picture"}</button>${i.img?` <button class="sm bad" data-a="imgdel" data-k="${kind}" data-r="${esc(i.ref)}">Remove</button>`:""}</span></div>`).join(""):'<p class="mu">Nothing here yet.</p>'}
+CHG.pic=el=>{PIC[el.dataset.k]=el.value;drawPics()};
+CHG.picfit=async el=>{if(await act("settings_save",{pic_fit:el.value},"Saved")){await boot();render()}};
+INP.pic=el=>{PIC.q=el.value;drawPicList()};
+ACT.imgset=async b=>{const p=await pickImage(b.dataset.k==="tab"?1400:360);if(!p)return;const r=await act("image_set",{kind:b.dataset.k,ref:b.dataset.r,b64:p.b64,mime:p.mime},"Picture saved");if(r){await boot();setTabPic();drawPicList()}};
+ACT.imgdel=async b=>{if(await act("image_delete",{kind:b.dataset.k,ref:b.dataset.r},"Picture removed")){await boot();setTabPic();drawPicList()}};
+
+/* ================= Top-up / Card typed in the cart: name, price and profit (cost = price - profit) ================= */
+function drawTops(){const e=$("#tpq");if(!e)return;const own=ME.role==="owner";
+  e.innerHTML=(SL.tops||[]).map(t=>`<span><button class="sm" data-a="tpq" data-id="${t.id}">${esc(t.name)} · ${own?"profit "+money(t.profit):money(t.price)}</button>${own?`<button class="sm bad" data-a="tpdel" data-id="${t.id}" title="Remove from the quick buttons">×</button>`:""}</span>`).join("")}
+async function tpForm(v){const d=await askForm("Top-up / Card",[{k:"name",l:"Name (e.g. iTunes $10)"},{k:"price",l:"Selling price ($)",t:"number"},{k:"profit",l:"Your profit ($)",t:"number"},{k:"player",l:"Player ID / order no. (optional)"}],v,"Add to cart");
+  if(!d)return;const price=parseFloat(d.price),profit=parseFloat(d.profit);if(!(d.name||"").trim()||isNaN(price)||price<0||isNaN(profit))return toast("Fill the name, the price and your profit");
+  SL.cart.push({id:SL.lid++,pid:null,name:d.name.trim(),qty:1,price,imei:"",svc:1,topup:1,cost:Math.round((price-profit)*100)/100,profit,player:(d.player||"").trim()});drawCart();drawGrid()}
+ACT.tpnew=()=>tpForm({name:"",price:"",profit:""});
+ACT.tpq=b=>{const t=SL.tops.find(x=>String(x.id)===b.dataset.id);if(!t)return;if(ME.role==="owner")return tpForm({name:t.name,price:t.price,profit:t.profit});
+  SL.cart.push({id:SL.lid++,pid:null,name:t.name,qty:1,price:t.price,imei:"",svc:1,topup:1,cost:0,profit:0,player:""});drawCart();drawGrid()};
+ACT.tpdel=b=>sure(b,async()=>{if(await act("topup_item_delete",{id:b.dataset.id})){SL.tops=await api("topup_items");drawTops()}});
+
+/* ================= program updates from a file ================= */
+let UPD={b64:"",ver:""};
+async function drawUpdates(){const b=$("#updbox");if(!b)return;let i;try{i=await api("update_info")}catch(e){return}
+  const rows=[{v:"builtin",l:i.builtin,sub:"built into the program"},...i.installed.map(x=>({v:x.version,l:x.version,sub:"installed update"}))];
+  b.innerHTML=`<div class="row"><span>You are on <b>${esc(i.running)}</b> <span class="tag ${i.current==="builtin"?"":"ok"}">${i.current==="builtin"?"built into the program":"installed update"}</span></span><button class="pri" data-a="updpick">Install an update from a file</button></div>
+  ${i.note?`<p class="low">${esc(i.note)}</p>`:""}${i.status==="new"?'<p class="mu">This new version is confirmed as soon as the program starts correctly. If it does not, the program goes back to the previous version by itself.</p>':""}
+  <p class="mu">When you get a new version, you do not need to build the program again: choose the zip here, then restart. It asks for the owner password. Only install files that come from your developer.</p>
+  ${T(["Version","Where","",],rows.map(r=>`<tr><td>${esc(r.l)}</td><td class="mu">${r.sub}</td><td>${r.v===i.current?'<span class="tag ok">in use</span>':`<button class="sm" data-a="updused" data-v="${esc(r.v)}">Use this version</button>`}</td></tr>`),"")}`}
+function pwField(){return ME.has_users?[{k:"password",l:"Owner password",t:"password"}]:[]}
+ACT.updpick=()=>{const f=document.createElement("input");f.type="file";f.accept=".zip";f.onchange=async()=>{const file=f.files[0];if(!file)return;
+  const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]||"");r.onerror=rej;r.readAsDataURL(file)});
+  const r=await act("update_check",{b64});if(!r)return;UPD={b64,ver:r.d.version};const rel={newer:"newer than the version you are using",same:"the same version you are using",older:"OLDER than the version you are using"}[r.d.relation];
+  const d=await askForm("Update found: "+r.d.version,pwField(),{},"Install "+r.d.version+" and restart");if(!d)return;
+  if(r.d.notes)toast("What's new: "+r.d.notes.replace(/\s+/g," ").slice(0,160),9000);
+  const q=await act("update_install",{b64,password:d.password||""});if(!q)return;restartScreen(q.d)};
+  f.click()};
+ACT.updused=async b=>{const d=await askForm("Use version "+b.dataset.v,pwField(),{},"Switch and restart");if(!d)return;if(await act("update_use",{version:b.dataset.v,password:d.password||""}))restartScreen(b.dataset.v)};
+async function restartScreen(v){openModal(`<h3>Version ${esc(v)} is ready</h3><p class="mu">The program is restarting. If it does not open again by itself in a few seconds, open it from your shortcut.</p>`);try{await api("app_restart")}catch(e){}}
+
+/* ---- Arabic (RTL) */
+const AR={"Home":"الرئيسية","Sell":"بيع","Sales":"المبيعات","Inventory":"المخزون","Validity days":"أيام الصلاحية","Alfa":"ألفا","Day summary":"ملخص اليوم","Username":"اسم المستخدم","Password":"كلمة السر","Owner password":"كلمة سر المالك","Top-up / Card":"شحنة / بطاقة","Dashboard":"لوحة المعلومات","Touch":"تاتش","Trade-in":"شراء مستعمل","Warranty":"الكفالة","Bulk price change":"تعديل الأسعار دفعة وحدة","Export to Excel":"تصدير إلى Excel","Stock count":"جرد المخزون","Customers":"الزبائن","Installments":"الأقساط","Suppliers":"الموردون","Repairs":"الصيانة","Expenses":"المصاريف","Offers":"العروض","Reports":"التقارير","Settings":"الإعدادات","Calculator":"آلة حاسبة","Light / Dark":"فاتح / داكن","Lock":"قفل",
+"Save":"حفظ","Cancel":"إلغاء","Close":"إغلاق","Add":"إضافة","Edit":"تعديل","Delete":"حذف","Remove":"إزالة","Print":"طباعة","Search":"بحث","Show":"عرض","Pay":"دفع","Receipt":"إيصال","Return":"إرجاع","Void":"إلغاء الفاتورة","Complete sale":"إتمام البيع","Clear":"مسح","Tap again":"اضغط مرة أخرى","Save sale":"حفظ البيع","+ Add card":"+ إضافة كرت","+ Add service":"+ إضافة خدمة","Add product":"إضافة منتج","Save changes":"حفظ التعديلات","Back up now":"نسخ احتياطي الآن","Unlock":"فتح","Sign in":"تسجيل الدخول","User":"المستخدم","PIN":"الرقم السري","Confirm":"تأكيد","Select":"اختيار","Open":"فتح","Remind":"تذكير","Receive":"استلام","WhatsApp":"واتساب","Statement":"كشف حساب","Email me":"أرسل لي بالبريد","WhatsApp to me":"واتساب لي","Start over":"ابدأ من جديد","Print labels":"طباعة ملصقات","Label":"ملصق","Print statement":"طباعة كشف الحساب","WhatsApp statement":"كشف الحساب واتساب",
+"Cart":"السلة","Customer":"الزبون","Walk-in":"زبون عابر","Payment method":"طريقة الدفع","Customer pays in":"الزبون يدفع بـ","Total":"المجموع","Paid":"المدفوع","Balance due":"المتبقي","Notes":"ملاحظات","Name":"الاسم","Phone":"الهاتف","Address":"العنوان","Category":"الفئة","Price":"السعر","Cost":"الكلفة","Stock":"المخزون","Barcode":"الباركود","Quantity":"الكمية","Date":"التاريخ","From":"من","To":"إلى","Amount":"المبلغ","Method":"الطريقة","Note":"ملاحظة","Time":"الوقت","Type":"النوع","Item":"الصنف","Profit":"الربح","Revenue":"الإيرادات","Balance":"الرصيد","Status":"الحالة","Cash":"نقدي","Card":"بطاقة","Transfer":"تحويل","Cash in":"إدخال نقد","Cash out":"إخراج نقد","Reason":"السبب","Role":"الصلاحية","Owner":"مالك","Cashier":"كاشير","Product":"المنتج","Products":"المنتجات","Invoice":"الفاتورة","Remaining":"المتبقي","Due":"الاستحقاق","Qty":"الكمية","Alfa":"ألفا","System":"النظام","Counted":"المعدود","Difference":"الفرق","Currency":"العملة","Language":"اللغة","Details":"التفاصيل","Action":"الإجراء","By":"بواسطة","Service":"خدمة","Services":"الخدمات","Duration":"المدة",
+"Cash drawer close-out":"إقفال الصندوق","Past closes":"إقفالات سابقة","Opening float":"رصيد الافتتاح","Counted cash":"النقد المعدود","Expected cash":"النقد المتوقع","Close drawer":"إقفال الصندوق","Sales today":"مبيعات اليوم","Profit today":"ربح اليوم","Cash received today":"النقد المقبوض اليوم","Low stock items":"أصناف قليلة","Customer debts":"ديون الزبائن","Owed to suppliers":"مستحقات الموردين","Overdue installments":"أقساط متأخرة","Open repairs":"صيانة مفتوحة","Alfa stock":"رصيد ألفا","Last 7 days":"آخر 7 أيام","Low stock":"مخزون قليل","Everything is stocked.":"كل شيء متوفر.","Installments due in 7 days":"أقساط تستحق خلال 7 أيام","Nothing due soon.":"لا شيء مستحق قريبا.","Nothing here yet.":"لا يوجد شيء بعد.","Nothing yet.":"لا يوجد شيء بعد.","No sales in this period.":"لا مبيعات في هذه الفترة.","Today":"اليوم","This month":"هذا الشهر","All time":"كل الوقت","Customer debts":"ديون الزبائن","Add customer":"إضافة زبون","Only debtors":"المدينون فقط","Warranty check":"فحص الكفالة","New repair ticket":"تذكرة صيانة جديدة","Add expense":"إضافة مصروف","Recurring expenses":"مصاريف شهرية ثابتة","Add supplier":"إضافة مورد","New purchase":"فاتورة شراء جديدة",
+"VALIDITY DAYS":"أيام الصلاحية","Price taken ($)":"السعر المقبوض ($)","Alfa returned ($)":"ألفا المرجّع ($)","Cards used (from Inventory, at cost)":"الكروت المستخدمة (من المخزون بالكلفة)","Received in":"المبلغ بعملة","Customer (needed if there is a debt)":"الزبون (مطلوب عند وجود دين)","Sell Alfa / services":"بيع ألفا / خدمات","Sale type":"نوع البيع","Alfa dollars":"دولارات ألفا","Stock adjustments":"تعديلات المخزون","Recent Alfa activity":"آخر حركات ألفا","Cost of 1$ Alfa":"كلفة 1$ ألفا","Exchange rate":"سعر الصرف","Set stock exactly":"ضبط الرصيد بدقة","Adjust Alfa stock":"تعديل رصيد ألفا","Sale price ($)":"سعر البيع ($)","Amount sent ($)":"المبلغ المرسل ($)","Customer (needed if there is a debt)":"الزبون (مطلوب عند وجود دين)","+ Save current as preset":"+ حفظ كإعداد سريع","Alfa taken from stock":"ألفا المأخوذ من الرصيد","Profit added":"الربح المضاف","Sale price":"سعر البيع","Debt on customer":"دين على الزبون","Customer pays":"الزبون يدفع",
+"Shop & loyalty":"المحل والنقاط","Cloud & email backup":"النسخ الاحتياطي","Security & data":"الأمان والبيانات","Backups":"النسخ الاحتياطية","Logo & look":"الشعار والمظهر","Danger zone":"منطقة الخطر","Wipe all data":"مسح كل البيانات","Users & PIN":"المستخدمون","Activity log":"سجل النشاط","Exchange-rate history":"سجل سعر الصرف","Save settings":"حفظ الإعدادات","Shop name":"اسم المحل","Currency symbol":"رمز العملة","Receipt footer":"تذييل الإيصال","Lebanese lira per 1 USD (exchange rate)":"الليرة اللبنانية مقابل 1 دولار","Alfa fee per message ($ Alfa)":"رسوم الرسالة (ألفا $)","Auto-lock after N minutes (0 = off)":"قفل تلقائي بعد (دقائق، 0 = إيقاف)","Receipt width: 80mm or A4":"عرض الإيصال: 80mm أو A4","Your WhatsApp number (for the daily summary)":"رقم واتساب الخاص بك (للملخص اليومي)","+ Add user":"+ إضافة مستخدم","Edit / PIN":"تعديل / رقم سري","Import data from POS V4":"استيراد بيانات POS V4","Move from POS V4":"النقل من POS V4","Accent colour":"لون التصميم","Reset colour":"إعادة اللون","Remove logo":"إزالة الشعار",
+"Search products":"ابحث عن منتج","Scan barcode or IMEI here (or type + Enter)":"امسح الباركود أو IMEI هنا","Saved":"تم الحفظ","Cart is empty":"السلة فارغة","Sale saved":"تم حفظ البيع","Settings saved":"تم حفظ الإعدادات","Owner PIN required":"مطلوب الرقم السري للمالك","Owner PIN":"الرقم السري للمالك","Stock count":"جرد المخزون","Apply counted quantities":"تطبيق الكميات المعدودة","Nothing scanned yet.":"لم يتم مسح شيء بعد.","Missing IMEIs":"أرقام IMEI المفقودة","Stock count":"جرد المخزون","Wrong PIN":"رقم سري خاطئ"};
+function trText(n){if(LANG!=="ar")return;const p=n.parentElement;if(!p||/^(SCRIPT|STYLE|TEXTAREA)$/.test(p.tagName))return;const t=n.nodeValue,k=t.trim();if(k&&AR[k])n.nodeValue=t.replace(k,AR[k])}
+function trEl(root){if(LANG!=="ar")return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),ns=[];while(w.nextNode())ns.push(w.currentNode);ns.forEach(trText);
+  if(root.querySelectorAll)root.querySelectorAll("[placeholder],[title]").forEach(e=>["placeholder","title"].forEach(a=>{const v=e.getAttribute(a);if(v&&AR[v])e.setAttribute(a,AR[v])}))}
+function startLang(){document.documentElement.lang=LANG;document.documentElement.dir=LANG==="ar"?"rtl":"ltr";if(LANG!=="ar")return;trEl(document.body);
+  if(!startLang.mo){startLang.mo=new MutationObserver(ms=>ms.forEach(m=>{m.addedNodes.forEach(n=>n.nodeType===1?trEl(n):n.nodeType===3&&trText(n));if(m.type==="characterData")trText(m.target)}));startLang.mo.observe(document.body,{childList:true,subtree:true,characterData:true})}}
+
+/* ================= settings & backup ================= */
+const SFIELDS=[["shop_name","Shop name"],["shop_phone","Phone"],["shop_address","Address"],["currency","Currency symbol"],["receipt_footer","Receipt footer"],["country_code","Phone country code (for WhatsApp)"],["points_per","Spend this much to earn 1 point"],["point_value","Value of 1 point (discount)"],["keep_backups","Keep the last N backups"],["lbp_rate","Lebanese lira per 1 USD (exchange rate)"],["alfa_fee","Alfa fee per message ($ Alfa)"],["touch_fee","Touch fee per message ($ Touch)"],["max_discount_pct","Cashier discount limit (% of the sale) before owner PIN"],["autolock_min","Auto-lock after N minutes (0 = off)"],["receipt_width","Receipt width: 80mm or A4"],["owner_phone","Your WhatsApp number (for the daily summary)"],["backup_hours","Automatic backup every N hours (0 = off)"],["lan_port","Shop network port (default 8765)"]];
+const CFIELDS=[["gdrive_folder","Google Drive for Desktop folder (optional)"],["email_to","Send backups to this email"],["smtp_host","SMTP host (optional)"],["smtp_port","SMTP port"],["smtp_user","SMTP user (optional)"],["smtp_pass","SMTP / app password"],["backup_password","Backup password (encrypts every backup)"]];
+async function viewSet(){
+  const bl=await api("backup_list"),inp=([k,l])=>`<div><label>${l}</label><input data-k="${k}" ${(k==="smtp_pass"||k==="backup_password")?'type="password" placeholder="'+(SET["has_"+k]?"saved — leave blank to keep":"")+'"':`value="${esc(SET[k])}"`}></div>`;
+  $("#main").innerHTML=`<div class="two"><div><div class="card mb"><h3>Shop &amp; loyalty</h3><div class="form" id="sf1">${SFIELDS.map(inp).join("")}</div></div>
+  <div class="card mb"><h3>Cloud &amp; email backup</h3><div class="form" id="sf2">${CFIELDS.map(inp).join("")}</div>
+  <label><input type="checkbox" id="c1" ${SET.auto_backup==="1"?"checked":""}> Automatic daily backup</label><label><input type="checkbox" id="c2" ${SET.auto_drive==="1"?"checked":""}> Upload each automatic backup to Google Drive</label>
+  <label><input type="checkbox" id="c3" ${SET.allow_negative==="1"?"checked":""}> Allow selling when stock is 0</label>
+  <label><input type="checkbox" id="c4" ${SET.auto_summary==="1"?"checked":""}> Email me the daily summary when I close the drawer</label>
+  <label>Language</label><select id="lang">${opts([["en","English"],["ar","العربية (Arabic)"]],SET.lang||"en")}</select>
+  <div class="row"><span class="mu">Backup password: ${SET.has_backup_password?"on (backups are encrypted)":"off"}</span>${SET.has_backup_password?'<button class="sm bad" data-a="bpclear">Remove backup password</button>':""}</div><p class="mu">Google Drive: easiest is Google Drive for Desktop — put its folder above. Otherwise save your Google <b>credentials.json</b> in the data folder (see README).</p>
+  <div class="row"><span></span><button class="pri" data-a="setsave">Save settings</button></div></div>
+  <div class="card mb"><h3>Security &amp; data</h3><h3 style="margin-top:0">Users &amp; passwords</h3><div id="usersbox"></div>
+  <label>Import products from CSV (columns: name, category, barcode, cost, price, qty, min_qty)</label><input type="file" accept=".csv" id="csvf" data-c="csv"></div>
+  <div class="card mb"><h3>Shop network (use the system from another device)</h3><label><input type="checkbox" id="c5" ${SET.lan_mode==="1"?"checked":""}> Allow other devices on the shop Wi-Fi to open this system (needs the Owner user; restart the program after changing)</label><div id="lanbox"></div></div>
+  <div class="card mb"><h3>Exchange-rate history</h3><div id="ratebox"></div></div>
+  <div class="card mb"><h3>Move from POS V4</h3><p class="mu">Copies the data of your old POS V4 on this PC (products, customers, sales, settings) into this version. A backup of the current data is made first.</p><button data-a="impv4">Import data from POS V4</button></div>
+  <div class="card mb"><h3>Activity log</h3><div id="auditbox"></div></div>
+  <div class="card mb"><h3>Updates</h3><div id="updbox"></div></div>
+  <div class="card mb"><h3>Pictures</h3><p class="mu">Add pictures to products, Alfa / Touch services and cards, and to the top of each screen. They show on the Sell screen, Inventory, Validity days, Alfa / Touch and Home.</p><div class="form"><div><label>How pictures fit their box</label><select data-c="picfit"><option value="contain">Show the whole picture (nothing is cut off)</option><option value="cover">Fill the box (the edges may be cut)</option></select></div></div><div id="picbox"></div></div>
+  <div class="card mb"><h3>Logo &amp; look</h3>${SET.logo?`<div class="row"><img src="${SET.logo}" alt="" style="max-height:60px;max-width:60%"><button class="bad sm" data-a="logorm">Remove logo</button></div>`:'<p class="mu">No logo yet.</p>'}
+  <label>Upload your logo (PNG or JPG) — shown at the top and on receipts</label><input type="file" accept="image/*" data-c="logo">
+  <label>Accent colour</label><div class="row"><input type="color" data-c="accent" value="${esc(SET.accent||"#1d6fe8")}" style="width:70px;height:38px;padding:2px"><button class="sm" data-a="accentrst">Reset colour</button></div></div>
+  <div class="card mb" style="border-color:var(--bad)"><h3 class="low">Danger zone</h3><p class="mu">Erases everything you entered: products, IMEIs, customers, suppliers, sales, payments, expenses, repairs, Alfa stock... Your settings, PIN and logo stay. A backup is saved automatically first, so you can still restore it from the Backups list.</p><button class="bad" data-a="wipe">Wipe all data</button></div></div>
+  <div><div class="card mb"><h3>Backups</h3><div class="chips"><button class="pri" data-a="bnow">Back up now</button><button data-a="bdrive">Back up to Google Drive</button><button data-a="bmail">Back up by Email / Outlook</button></div>
+  <label>Restore from a backup file (for example on a new computer)</label><input type="file" accept=".zip,.enc" data-c="bfile">
+  <div class="chips"><button data-a="fold" data-w="backups">Open backups folder</button><button data-a="fold" data-w="data">Open data folder</button><button data-a="fold" data-w="exports">Open exports folder</button></div>
+  <p class="mu">Your data lives in <b>${esc(INFO.data_dir)}</b>, separate from the program, so updating the app never touches it.</p></div>
+  ${T(["Backup","Size","Date",""],bl.map(b=>`<tr><td>${esc(b.name)}</td><td>${b.kb} KB</td><td>${b.date}</td><td><button class="sm" data-a="bdrive" data-n="${esc(b.name)}">Drive</button> <button class="sm bad" data-a="brest" data-n="${esc(b.name)}">Restore</button></td></tr>`),"No backups yet.")}</div></div>`;drawSetExtras();drawPics();drawUpdates()}
+ACT.setsave=async()=>{const d={};$$("#sf1 input,#sf2 input").forEach(i=>d[i.dataset.k]=i.value);d.auto_backup=$("#c1").checked?"1":"0";d.auto_drive=$("#c2").checked?"1":"0";d.allow_negative=$("#c3").checked?"1":"0";d.auto_summary=$("#c4").checked?"1":"0";d.lang=$("#lang").value;const langChanged=d.lang!==(SET.lang||"en");d.lan_mode=$("#c5").checked?"1":"0";const lanChanged=d.lan_mode!==(SET.lan_mode||"0");
+  if(await act("settings_save",d,"Settings saved")){await boot();if(lanChanged)toast("Restart the program to apply the network setting",7000);if(langChanged)location.reload();else render()}};
+CHG.csv=async el=>{const f=el.files[0];if(!f)return;const r=await act("import_csv",{text:await f.text()});if(r)toast(r.d+" products imported")};
+ACT.fold=b=>act("open_folder",{which:b.dataset.w});
+ACT.bnow=async()=>{if(await act("backup_now",{},"Backup created"))viewSet()};
+ACT.bdrive=async b=>{toast("Uploading to Google Drive…",20000);const r=await act("backup_drive",{name:b.dataset.n});if(r)toast(r.d,6000);viewSet()};
+ACT.bmail=async()=>{toast("Sending email…",20000);const r=await act("backup_email",{});if(r)toast(r.d,6000);viewSet()};
+ACT.brest=b=>sure(b,async()=>{if(await act("backup_restore",{name:b.dataset.n},"Backup restored")){await boot();go("home")}});
+
+/* ================= shell ================= */
+const TABS=[["home","Home",viewHome],["dash","Dashboard",viewDash],["sell","Sell",viewSell],["sales","Sales",viewSales],["inv","Inventory",viewInv],["alfa","Alfa",()=>{PROV="alfa";resetProv();AL.type="svc";return viewAlfa()}],["touch","Touch",()=>{PROV="touch";TMODE="sell";resetProv();AL.type="svc";return viewAlfa()}],["day","Day summary",viewDay],["cnt","Stock count",viewCount],["trd","Trade-in",viewTradein],["wty","Warranty",viewClaims],["cus","Customers",viewCus],["debt","Installments",viewDebt],["sup","Suppliers",viewSup],["rep","Repairs",viewRep],["exp","Expenses",viewExp],["off","Offers",viewOff],["rpt","Reports",viewRpt],["set","Settings",viewSet]];
+function render(){$("#title").textContent=SET.shop_name||"Shop POS";document.title=$("#title").textContent;const lg=$("#logo");if(SET.logo){lg.src=SET.logo;lg.style.display=""}else lg.style.display="none";
+  if(!visTabs().find(t=>t[0]===tab))tab="home";$("#nav").innerHTML=visTabs().map(t=>`<button data-a="tab" data-t="${t[0]}" class="${t[0]===tab?"on":""}">${t[1]}</button>`).join("");
+  $("#lockb").style.display=ME.has_users?"":"none";
+  (setTabPic(),applyDisp(),tab!=="touch"&&(PROV="alfa"),TABS.find(t=>t[0]===tab)[2])().catch(e=>{$("#main").innerHTML=`<div class="card low">${esc(e.message)}</div>`})}
+function go(t){tab=t;if(t!=="sup")PD=null;render()}
+ACT.tab=b=>go(b.dataset.t);
+ACT.theme=()=>{const d=document.documentElement,dark=getComputedStyle(d).colorScheme==="dark";d.dataset.theme=dark?"light":"dark";try{localStorage.setItem("theme",d.dataset.theme)}catch(e){}};
+ACT.lock=async()=>{try{await api("logout")}catch(e){}sessionStorage.removeItem("sess");ME.user="";showLock()};
+async function showLock(){let u;try{u=await api("users_public")}catch(e){return}ME.has_users=u.has_users;if(!u.has_users){$("#lock").style.display="none";return}
+  $("#lkhead").innerHTML=`${SET.logo?`<img src="${SET.logo}" alt="" style="height:84px;max-width:100%;border-radius:12px">`:""}<div style="font-size:28px;font-weight:700;margin-top:8px;line-height:1.2">${esc(SET.shop_name||"Shop POS")}</div><div class="mu">Sign in to continue</div>`;
+  let last="";try{last=localStorage.getItem("lastuser")||""}catch(e){}
+  $("#luser").value=last;$("#pin").value="";$("#pin").type="password";$("#pinerr").textContent="";$("#lock").style.display="flex";(last?$("#pin"):$("#luser")).focus()}
+ACT.unlock=async()=>{const un=$("#luser").value.trim();if(!un||!$("#pin").value){$("#pinerr").textContent="Enter your username and password";return}
+  try{const lr=await api("login",{username:un,password:$("#pin").value});sessionStorage.setItem("sess",lr.session);try{localStorage.setItem("lastuser",un)}catch(e){}$("#lock").style.display="none";await boot();go("home")}catch(e){$("#pinerr").textContent=e.message;$("#pin").value=""}};
+ACT.eye=b=>{const p=$("#pin");p.type=p.type==="password"?"text":"password";b.textContent=p.type==="password"?"Show":"Hide";p.focus()};
+ACT.forgot=async()=>{const d=await askForm("Reset the owner password",[{k:"username",l:"Owner username"},{k:"code",l:"Recovery code (like K7QM-4D2P-9XTR)"},{k:"password",l:"New password (6 or more characters)",t:"password"}],{username:$("#luser").value},"Reset password");
+  if(!d)return;try{const r=await api("recover",d);showRecovery(r.recovery,"Password changed. Your new recovery code:")}catch(e){toast(e.message,6000)}};
+function showRecovery(code,msg){openModal(`<h3>Owner recovery code</h3><p class="mu">${esc(msg||"Write this code down and keep it somewhere safe. It is shown only once and it is the only way back in if the owner password is forgotten.")}</p><div style="font:600 24px/1.4 ui-monospace,Consolas,monospace;letter-spacing:2px;text-align:center;margin:12px 0">${esc(code)}</div><div class="row"><button data-a="print">Print</button><button class="pri" data-a="mclose">I saved it</button></div>`)}
+let idleT=null;const idleReset=()=>{clearTimeout(idleT);const m=+SET.autolock_min||0;if(m>0&&ME.has_users&&ME.user)idleT=setTimeout(()=>ACT.lock(),m*6e4)};
+["mousemove","keydown","click","touchstart"].forEach(ev=>document.addEventListener(ev,idleReset,{passive:true}));
+$("#luser").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("#pin").focus()}});
+$("#pin").addEventListener("keydown",e=>{if(e.key==="Enter")ACT.unlock()});
+async function boot(){const b=await api("boot");SET=b.settings;INFO=b;ME=b.me;$("#sync").textContent=b.version+(ME.user?" · "+ME.user+" ("+ME.role+")":"");applyAccent();applyPrintStyle();LANG=SET.lang||"en";startLang();idleReset()}
+(async()=>{try{const t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}
+  try{await boot()}catch(e){document.body.innerHTML="<p>Could not start: "+esc(e.message)+"</p>";return}
+  if(ME.has_users&&!ME.user)showLock();else render();setInterval(()=>api("ping").catch(()=>{}),5000)})();
+</script></body></html>
